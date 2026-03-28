@@ -8,16 +8,103 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap');
 
-    :root { --bg:#0f172a; --text:#e5e7eb; --accent:#cd9bf9; --card:#1e293b; --nav-bg:rgba(15,23,42,.7); --featured-bg:linear-gradient(135deg,#2a3b5f,#1f2b42); }
+    :root {
+      --bg:#0f172a;
+      --text:#e5e7eb;
+      --accent:#cd9bf9;
+      --card:#1e293b;
+      --nav-bg:rgba(15,23,42,.7);
+      --featured-bg:linear-gradient(135deg,#2a3b5f,#1f2b42);
+      --bg-gradient:linear-gradient(135deg,#050816,#0f172a 55%,#111d3d);
+      --bg-fx-1:rgba(56,189,248,.22);
+      --bg-fx-2:rgba(248,113,113,.18);
+      --bg-fx-3:rgba(147,197,253,.18);
+      --orb-one:rgba(59,130,246,.35);
+      --orb-two:rgba(244,114,182,.45);
+      --grid-color:rgba(255,255,255,.08);
+      --bg-aurora-1:#5c2bd8;
+      --bg-aurora-2:#14b8a6;
+      --beam-color:rgba(99,102,241,.32);
+      --star-color:rgba(255,255,255,.85);
+      --cursor-core:rgba(124,58,237,.45);
+      --cursor-ring:rgba(56,189,248,.65);
+      --cursor-spectrum-a:rgba(192,132,252,.9);
+      --cursor-spectrum-b:rgba(56,189,248,.9);
+      --cursor-spectrum-c:rgba(236,72,153,.95);
+      --cursor-nx:0;
+      --cursor-ny:0;
+      --trail-size:22px;
+      --burst-color:rgba(192,132,252,.95);
+      --burst-color-alt:rgba(56,189,248,.95);
+      --burst-halo:rgba(255,255,255,.85);
+    }
     @media (prefers-color-scheme: light) {
-      :root { --bg:#fff; --text:#111827; --card:#f3f4f6; --nav-bg:rgba(255,255,255,.85); --featured-bg:linear-gradient(135deg,#f5f5ff,#e8f0ff); }
+      :root {
+        --bg:#fff;
+        --text:#111827;
+        --card:#f3f4f6;
+        --nav-bg:rgba(255,255,255,.85);
+        --featured-bg:linear-gradient(135deg,#f5f5ff,#e8f0ff);
+        --bg-gradient:linear-gradient(135deg,#f5f8ff,#fff6fb);
+        --bg-fx-1:rgba(14,165,233,.18);
+        --bg-fx-2:rgba(244,114,182,.16);
+        --bg-fx-3:rgba(16,185,129,.15);
+        --orb-one:rgba(14,165,233,.25);
+        --orb-two:rgba(244,114,182,.32);
+        --grid-color:rgba(15,23,42,.06);
+        --bg-aurora-1:#7c3aed;
+        --bg-aurora-2:#0ea5e9;
+        --beam-color:rgba(59,130,246,.25);
+        --star-color:rgba(15,23,42,.7);
+        --cursor-core:rgba(124,58,237,.35);
+        --cursor-ring:rgba(14,165,233,.55);
+        --cursor-spectrum-a:rgba(157,78,221,.85);
+        --cursor-spectrum-b:rgba(14,165,233,.85);
+        --cursor-spectrum-c:rgba(244,114,182,.9);
+        --burst-color:rgba(192,132,252,.95);
+        --burst-color-alt:rgba(14,165,233,.9);
+        --burst-halo:rgba(255,255,255,.85);
+      }
     }
     html { scroll-behavior:smooth; }
 
-    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--text); color-scheme:dark; }
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; min-height:100vh; background:var(--bg); color:var(--text); color-scheme:dark; overflow-x:hidden; }
+    body.has-fancy-cursor { cursor:none; }
     @media (prefers-color-scheme: light) {
       body { color-scheme:light; }
     }
+    /* Layered background with drifting auroras, beams, and parallax stars */
+    .bg-canvas { position:fixed; inset:0; z-index:-3; pointer-events:none; overflow:hidden; background:var(--bg-gradient); background-attachment:fixed; filter:saturate(118%); }
+    .bg-canvas::before, .bg-canvas::after { content:""; position:absolute; inset:-25%; }
+    .bg-canvas::before { background:radial-gradient(circle at 30% 30%, var(--orb-one), transparent 55%), radial-gradient(circle at 70% 60%, var(--orb-two), transparent 60%); filter:blur(90px); opacity:.65; animation:driftGlow 28s ease-in-out infinite alternate; }
+    .bg-canvas::after { background-image:radial-gradient(var(--grid-color) 1px, transparent 1px); background-size:140px 140px; opacity:.18; mix-blend-mode:screen; animation:gridPulse 22s linear infinite; }
+    .bg-layer { position:absolute; inset:-30%; pointer-events:none; mix-blend-mode:screen; opacity:.55; will-change:transform; transition:filter .8s ease; }
+    .bg-layer--mesh { background:radial-gradient(circle at 20% 30%, rgba(92,43,216,.45), transparent 55%), radial-gradient(circle at 80% 70%, rgba(20,184,166,.35), transparent 60%), radial-gradient(circle at 50% 50%, rgba(236,72,153,.22), transparent 70%); background-size:160% 160%, 130% 130%, 200% 200%; filter:blur(80px); animation:auroraFlow 35s ease-in-out infinite alternate; }
+    .bg-layer--beams { background:linear-gradient(120deg, transparent 0 45%, var(--beam-color) 50%, transparent 55%); background-size:220% 220%; opacity:.3; filter:blur(35px); animation:beamSweep 24s linear infinite; }
+    .bg-layer--stars { background-image:radial-gradient(var(--star-color) 1.2px, transparent 1.2px); background-size:180px 180px; opacity:.35; animation:starDrift 90s linear infinite; }
+    .bg-layer--stars-secondary { background-image:radial-gradient(var(--star-color) 0.8px, transparent 0.8px); background-size:260px 260px; opacity:.22; animation:starDrift 120s linear infinite reverse; }
+    @keyframes driftGlow { 0% { transform:translate3d(-5%,0,0) scale(1); } 50% { transform:translate3d(6%, -3%,0) scale(1.12); } 100% { transform:translate3d(4%,3%,0) scale(1.05); } }
+    @keyframes gridPulse { 0% { transform:translateY(0); opacity:.16; } 100% { transform:translateY(-140px); opacity:.28; } }
+    @keyframes auroraFlow { 0% { background-position:0% 0%, 50% 50%, 100% 0%; } 50% { background-position:50% 20%, 80% 70%, 0% 60%; } 100% { background-position:100% 60%, 0% 30%, 60% 100%; } }
+    @keyframes beamSweep { 0% { background-position:0% 0%; } 100% { background-position:200% 200%; } }
+    @keyframes starDrift { 0% { background-position:0 0; } 100% { background-position:360px 360px; } }
+    .cursor-orb { position:fixed; top:0; left:0; width:260px; height:260px; border-radius:50%; pointer-events:none; background:radial-gradient(circle at 35% 25%, rgba(255,255,255,.78) 0%, rgba(255,255,255,0) 40%), radial-gradient(circle at 50% 50%, var(--cursor-core) 0%, rgba(15,23,42,0) 62%), radial-gradient(circle at 65% 40%, var(--cursor-spectrum-b) 0%, transparent 65%), radial-gradient(circle at 30% 70%, var(--cursor-spectrum-c) 0%, transparent 75%); box-shadow:0 0 140px var(--cursor-spectrum-a), 0 0 220px var(--cursor-spectrum-b); filter:blur(30px) saturate(190%); mix-blend-mode:screen; opacity:0; transform:translate3d(-999px,-999px,0); transition:opacity .35s ease; z-index:-1; backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.08); }
+    .cursor-orb::before { content:""; position:absolute; inset:10%; border-radius:50%; background:conic-gradient(from 180deg, rgba(255,255,255,.45), rgba(255,255,255,0), rgba(255,255,255,.45)); filter:blur(12px); opacity:.65; animation:orbSpin 16s linear infinite; }
+    .cursor-orb::after { content:""; position:absolute; inset:18%; border-radius:50%; border:1px solid rgba(255,255,255,.45); box-shadow:0 0 40px var(--cursor-ring), 0 0 60px var(--cursor-spectrum-b); opacity:.65; animation:cursorPulse 9s linear infinite; }
+    .cursor-glyph { position:fixed; width:26px; height:26px; border-radius:10px; pointer-events:none; border:2px solid rgba(255,255,255,.92); background:linear-gradient(135deg, var(--cursor-spectrum-c), var(--cursor-spectrum-b)); box-shadow:0 8px 26px rgba(13,25,47,.55), 0 0 32px var(--cursor-spectrum-b), 0 0 48px rgba(244,114,182,.75); transform:translate3d(-999px,-999px,0) rotate(45deg); opacity:0; transition:opacity .2s ease, border .2s ease, transform .2s ease; z-index:25; mix-blend-mode:screen; backdrop-filter:blur(4px); }
+    .cursor-glyph::after { content:""; position:absolute; inset:28%; border-radius:50%; background:rgba(255,255,255,.92); box-shadow:0 0 8px rgba(255,255,255,.9); }
+    .cursor-glyph.is-visible { opacity:1; }
+    .cursor-trail { position:fixed; width:var(--trail-size); height:var(--trail-size); border-radius:50%; pointer-events:none; background:radial-gradient(circle, rgba(255,255,255,.95) 0%, var(--trail-color, hsla(270,95%,70%,.95)) 38%, transparent 80%); mix-blend-mode:color-dodge; filter:blur(10px); opacity:0; transform:translate3d(-999px,-999px,0); transition:opacity .35s ease-out, transform .25s ease-out; z-index:20; box-shadow:0 0 28px var(--trail-color, hsla(270,95%,70%,.65)), 0 0 48px rgba(255,255,255,.25); border:1px solid rgba(255,255,255,.12); }
+    .cursor-trail.is-active { opacity:.85; }
+    .cursor-trail.is-secondary { filter:blur(18px); opacity:.5; }
+    @keyframes cursorPulse { 0% { transform:scale(.8) rotate(0deg); opacity:.4; } 50% { opacity:.8; } 100% { transform:scale(1.2) rotate(360deg); opacity:.4; } }
+    @keyframes orbSpin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
+    .click-burst { position:fixed; width:220px; height:220px; margin:-110px 0 0 -110px; pointer-events:none; mix-blend-mode:screen; clip-path:polygon(50% 0%, 64% 26%, 98% 35%, 72% 57%, 80% 96%, 50% 78%, 20% 96%, 28% 57%, 2% 35%, 36% 26%); background:conic-gradient(from -90deg, var(--burst-color, rgba(192,132,252,.95)) 0% 22%, rgba(255,255,255,.92) 22% 32%, var(--burst-color-alt, rgba(56,189,248,.95)) 32% 58%, rgba(255,255,255,.6) 58% 68%, transparent 68% 100%); filter:drop-shadow(0 0 28px var(--burst-color, rgba(192,132,252,.95))) drop-shadow(0 0 38px rgba(255,255,255,.35)); animation:clickBurstStar .95s cubic-bezier(.4,.02,.12,.99) forwards; opacity:.95; transform-origin:center; }
+    .click-burst::before { content:""; position:absolute; inset:24%; border-radius:50%; border:2px solid rgba(255,255,255,.8); box-shadow:0 0 32px var(--burst-halo, rgba(255,255,255,.85)); opacity:.85; animation:clickBurstHalo .95s ease-out forwards; }
+    .click-burst::after { content:""; position:absolute; inset:6%; background:conic-gradient(var(--burst-color-alt, rgba(56,189,248,.95)) 0 18%, transparent 18% 36%, var(--burst-color, rgba(192,132,252,.95)) 36% 60%, transparent 60% 82%, rgba(255,255,255,.9) 82% 100%); clip-path:polygon(50% 7%, 63% 32%, 94% 38%, 70% 58%, 76% 90%, 50% 74%, 24% 90%, 30% 58%, 6% 38%, 37% 32%); filter:blur(.4px); mix-blend-mode:screen; opacity:.8; animation:clickBurstRays .95s ease-out forwards; }
+    @keyframes clickBurstStar { 0% { transform:translate3d(0,0,0) scale(.25) rotate(-35deg); opacity:.98; } 65% { opacity:.85; } 100% { transform:scale(1.35) rotate(25deg); opacity:0; } }
+    @keyframes clickBurstHalo { 0% { transform:scale(.5); opacity:.9; } 70% { opacity:.55; } 100% { transform:scale(1.8); opacity:0; } }
+    @keyframes clickBurstRays { 0% { transform:scale(.35) rotate(-25deg); opacity:.8; } 100% { transform:scale(1.5) rotate(35deg); opacity:0; } }
     header { padding:3rem 1rem; display:flex; justify-content:center; }
     .hero { width:min(100%, 960px); display:flex; align-items:center; justify-content:center; gap:2rem; flex-wrap:wrap; text-align:center; }
     .hero-text { flex:1; min-width:260px; text-align:center; }
@@ -78,10 +165,30 @@
     @media (max-width: 700px) {
       .topic-items { grid-auto-columns:minmax(240px, 85%); }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      .bg-layer,
+      .bg-canvas::before,
+      .bg-canvas::after,
+      .cursor-orb,
+      .cursor-orb::before,
+      .cursor-orb::after,
+      .cursor-glyph,
+      .cursor-trail,
+      .click-burst { animation:none !important; transition:none !important; }
+    }
   </style>
 </head>
 
 <body>
+<div class="bg-canvas" aria-hidden="true">
+  <div class="bg-layer bg-layer--mesh" data-depth="60"></div>
+  <div class="bg-layer bg-layer--beams" data-depth="30"></div>
+  <div class="bg-layer bg-layer--stars" data-depth="75"></div>
+  <div class="bg-layer bg-layer--stars-secondary" data-depth="120"></div>
+</div>
+<div class="cursor-orb" aria-hidden="true"></div>
+<div class="cursor-glyph" aria-hidden="true"></div>
 
 <header>
   <div class="hero">
@@ -365,12 +472,178 @@
 </section>
 
 
+</footer>
+
+<script>
+  const root = document.documentElement;
+  const cursorOrb = document.querySelector('.cursor-orb');
+  const cursorGlyph = document.querySelector('.cursor-glyph');
+  const parallaxLayers = Array.from(document.querySelectorAll('.bg-layer[data-depth]'));
+  const pointerMedia = window.matchMedia('(pointer:fine)');
+  const motionMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const enableCursorFx = cursorOrb && cursorGlyph && pointerMedia.matches && !motionMedia.matches;
+  const state = {
+    x: window.innerWidth / 2,
+    y: window.innerHeight / 2,
+    targetX: window.innerWidth / 2,
+    targetY: window.innerHeight / 2,
+    shiftX: 0,
+    shiftY: 0,
+    shiftTargetX: 0,
+    shiftTargetY: 0,
+    glyphX: window.innerWidth / 2,
+    glyphY: window.innerHeight / 2,
+    glyphTargetX: window.innerWidth / 2,
+    glyphTargetY: window.innerHeight / 2,
+  };
+  const TRAIL_SIZE = parseFloat(getComputedStyle(root).getPropertyValue('--trail-size')) || 22;
+  let trails = [];
+  let rafId = null;
+  // Neon palette keeps the pointer trails vivid even on dark backgrounds.
+  const trailPalette = [
+    'hsla(280, 95%, 70%, 0.95)',
+    'hsla(200, 95%, 65%, 0.92)',
+    'hsla(320, 94%, 70%, 0.95)',
+    'hsla(165, 88%, 65%, 0.9)'
+  ];
+
+  const updateCursorProps = (nx, ny) => {
+    root.style.setProperty('--cursor-nx', nx.toFixed(4));
+    root.style.setProperty('--cursor-ny', ny.toFixed(4));
+  };
+
+  const initTrails = () => {
+    const count = 9;
+    trails = Array.from({ length: count }, (_, index) => {
+      const dot = document.createElement('span');
+      dot.className = 'cursor-trail';
+      if (index % 2 === 1) dot.classList.add('is-secondary');
+      dot.style.setProperty('--trail-color', trailPalette[index % trailPalette.length]);
+      document.body.appendChild(dot);
+      return { el: dot, x: state.x, y: state.y };
+    });
+  };
+
+  const handlePointerMove = (event) => {
+    state.targetX = event.clientX;
+    state.targetY = event.clientY;
+    const nx = event.clientX / window.innerWidth - 0.5;
+    const ny = event.clientY / window.innerHeight - 0.5;
+    state.shiftTargetX = nx * 140;
+    state.shiftTargetY = ny * 100;
+    state.glyphTargetX = event.clientX;
+    state.glyphTargetY = event.clientY;
+    updateCursorProps(nx, ny);
+    if (cursorOrb) {
+      cursorOrb.style.opacity = 1;
+    }
+    if (cursorGlyph) {
+      cursorGlyph.classList.add('is-visible');
+    }
+    trails.forEach(({ el }) => el.classList.add('is-active'));
+  };
+
+  const resetPointer = () => {
+    state.targetX = window.innerWidth / 2;
+    state.targetY = window.innerHeight / 2;
+    state.shiftTargetX = 0;
+    state.shiftTargetY = 0;
+    state.glyphTargetX = window.innerWidth / 2;
+    state.glyphTargetY = window.innerHeight / 2;
+    updateCursorProps(0, 0);
+    if (cursorOrb) {
+      cursorOrb.style.opacity = 0;
+    }
+    if (cursorGlyph) {
+      cursorGlyph.classList.remove('is-visible');
+    }
+    trails.forEach(({ el }) => el.classList.remove('is-active'));
+  };
+
+  const render = () => {
+    state.x += (state.targetX - state.x) * 0.28;
+    state.y += (state.targetY - state.y) * 0.28;
+    state.shiftX += (state.shiftTargetX - state.shiftX) * 0.12;
+    state.shiftY += (state.shiftTargetY - state.shiftY) * 0.12;
+    state.glyphX += (state.glyphTargetX - state.glyphX) * 0.45;
+    state.glyphY += (state.glyphTargetY - state.glyphY) * 0.45;
+
+    if (cursorOrb) {
+      cursorOrb.style.transform = `translate3d(${state.x - 130}px, ${state.y - 130}px, 0)`;
+    }
+    if (cursorGlyph) {
+      const angle = Math.atan2(state.targetY - state.y, state.targetX - state.x) * (180 / Math.PI);
+      cursorGlyph.style.transform = `translate3d(${state.glyphX - 11}px, ${state.glyphY - 11}px, 0) rotate(${angle}deg)`;
+    }
+
+    trails.forEach((trail, index) => {
+      const previous = index === 0 ? { x: state.x, y: state.y } : trails[index - 1];
+      const follow = Math.max(0.2 - index * 0.012, 0.08);
+      trail.x += (previous.x - trail.x) * follow;
+      trail.y += (previous.y - trail.y) * follow;
+      const scale = Math.max(1 - index * 0.07, 0.3);
+      trail.el.style.transform = `translate3d(${trail.x - TRAIL_SIZE / 2}px, ${trail.y - TRAIL_SIZE / 2}px, 0) scale(${scale})`;
+    });
+
+    parallaxLayers.forEach((layer) => {
+      const depth = Number(layer.dataset.depth || 0) / 100;
+      const x = state.shiftX * depth;
+      const y = state.shiftY * depth;
+      layer.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    });
+
+    rafId = requestAnimationFrame(render);
+  };
+
+  if (enableCursorFx) {
+    document.body.classList.add('has-fancy-cursor');
+    updateCursorProps(0, 0);
+    initTrails();
+    resetPointer();
+    render();
+    document.addEventListener('pointermove', handlePointerMove, { passive: true });
+    document.addEventListener('pointerdown', handlePointerMove, { passive: true });
+    window.addEventListener('pointerleave', resetPointer);
+    window.addEventListener('blur', resetPointer);
+    window.addEventListener('resize', () => {
+      state.x = window.innerWidth / 2;
+      state.y = window.innerHeight / 2;
+      state.targetX = state.x;
+      state.targetY = state.y;
+      state.glyphX = state.x;
+      state.glyphY = state.y;
+      state.glyphTargetX = state.x;
+      state.glyphTargetY = state.y;
+    });
+  } else {
+    document.body.classList.remove('has-fancy-cursor');
+  }
+
+  const clickPalettes = [
+    { primary: 'rgba(192,132,252,0.95)', secondary: 'rgba(56,189,248,0.9)', halo: 'rgba(255,255,255,0.9)' },
+    { primary: 'rgba(236,72,153,0.95)', secondary: 'rgba(251,191,36,0.95)', halo: 'rgba(255,255,255,0.85)' },
+    { primary: 'rgba(14,165,233,0.92)', secondary: 'rgba(16,185,129,0.9)', halo: 'rgba(255,255,255,0.9)' },
+    { primary: 'rgba(248,113,113,0.95)', secondary: 'rgba(99,102,241,0.92)', halo: 'rgba(255,255,255,0.88)' }
+  ];
+  // Rotate palettes so each click fires a different neon burst combination.
+  document.addEventListener('pointerdown', (event) => {
+    const burst = document.createElement('span');
+    burst.className = 'click-burst';
+    burst.style.left = event.clientX + 'px';
+    burst.style.top = event.clientY + 'px';
+    const palette = clickPalettes[Math.floor(Math.random() * clickPalettes.length)];
+    burst.style.setProperty('--burst-color', palette.primary);
+    burst.style.setProperty('--burst-color-alt', palette.secondary);
+    burst.style.setProperty('--burst-halo', palette.halo);
+    document.body.appendChild(burst);
+    burst.addEventListener('animationend', () => burst.remove());
+  });
+</script>
+
 <footer>
   © 2026 Jingbo Wang; Total Visitors:
         <a href='https://www.counter12.com'><img src='https://www.counter12.com/img-xWZ216Z86zx2AZbb-77.gif' border='0' alt='web counter free'></a><script type='text/javascript' src='https://www.counter12.com/ad.js?id=xWZ216Z86zx2AZbb'></script></div> 
 </footer>
-
-
 
 </body>
 </html>
