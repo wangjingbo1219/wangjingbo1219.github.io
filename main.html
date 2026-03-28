@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jingbo Wang (王靖博)</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap');
+
+    :root { --bg:#0f172a; --text:#e5e7eb; --accent:#cd9bf9; --card:#1e293b; --nav-bg:rgba(15,23,42,.7); --featured-bg:linear-gradient(135deg,#2a3b5f,#1f2b42); }
+    @media (prefers-color-scheme: light) {
+      :root { --bg:#fff; --text:#111827; --card:#f3f4f6; --nav-bg:rgba(255,255,255,.85); --featured-bg:linear-gradient(135deg,#f5f5ff,#e8f0ff); }
+    }
+    html { scroll-behavior:smooth; }
+
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--text); color-scheme:dark; }
+    @media (prefers-color-scheme: light) {
+      body { color-scheme:light; }
+    }
+    header { padding:3rem 1rem; display:flex; justify-content:center; }
+    .hero { width:min(100%, 960px); display:flex; align-items:center; justify-content:center; gap:2rem; flex-wrap:wrap; text-align:center; }
+    .hero-text { flex:1; min-width:260px; text-align:center; }
+    h1 { font-size:3rem; margin:0; }
+    .calligraphy { font-family:'Dancing Script',cursive; display:block; font-size:1.5rem; }
+    .subtitle { opacity:.8; margin-top:.6rem; }
+    .hero-links { display:flex; justify-content:center; gap:.75rem; margin-top:1rem; flex-wrap:wrap; }
+    .hero-links a { display:inline-flex; align-items:center; gap:.4rem; padding:.45rem 1rem; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.08); color:var(--text); text-decoration:none; font-size:.9rem; transition:.2s; }
+    .hero-links a:hover { transform:translateY(-2px); background:rgba(255,255,255,.15); }
+    .hero-links img { width:20px; height:20px; object-fit:contain; }
+    .portrait-frame { width:220px; height:220px; border-radius:26px; overflow:hidden; border:4px solid rgba(255,255,255,.08); box-shadow:0 12px 40px rgba(0,0,0,.35); background:rgba(255,255,255,.05); display:flex; align-items:center; justify-content:center; }
+    .portrait-img { width:100%; height:100%; object-fit:cover; }
+
+    nav { position:sticky; top:0; backdrop-filter:blur(10px); background:var(--nav-bg); display:flex; justify-content:center; gap:2rem; padding:1rem; z-index:10; }
+    nav a { color:var(--accent); text-decoration:none; }
+
+    section { max-width:1400px; margin:auto; padding:2.5rem 1.5rem; }
+    .card { background:var(--card); padding:1.5rem; border-radius:16px; margin-bottom:2.5rem; box-shadow:0 6px 30px rgba(0,0,0,.25);}    
+    .card p { line-height:1.8; }
+
+    .topics-grid { display:flex; flex-direction:column; gap:2.25rem; }
+    .topic-card { --topic-bg:rgba(248,249,255,.95); --topic-border:rgba(148,163,184,.35); --topic-pill:rgba(148,163,184,.2); --topic-accent:#475569; border-radius:28px; padding:1.75rem; border:1px solid var(--topic-border); background:var(--topic-bg); box-shadow:0 25px 60px rgba(0,0,0,.18); display:flex; flex-direction:column; gap:1.25rem; color:#0f172a; }
+    .topic-card.theme-violet { --topic-bg:rgba(243,236,255,.95); --topic-border:rgba(99,102,241,.35); --topic-pill:rgba(99,102,241,.18); --topic-accent:#5b21b6; }
+    .topic-card.theme-amber { --topic-bg:rgba(255,250,240,.95); --topic-border:rgba(251,191,36,.4); --topic-pill:rgba(251,191,36,.2); --topic-accent:#d97706; }
+    .topic-card.theme-cyan { --topic-bg:rgba(236,253,245,.95); --topic-border:rgba(16,185,129,.35); --topic-pill:rgba(16,185,129,.15); --topic-accent:#0f9d7a; }
+    .topic-card.theme-rose { --topic-bg:rgba(255,241,247,.95); --topic-border:rgba(244,114,182,.35); --topic-pill:rgba(244,114,182,.18); --topic-accent:#db2777; }
+    .topic-heading { display:flex; align-items:center; gap:1rem; }
+    .topic-icon { width:52px; height:52px; border-radius:16px; background:var(--topic-pill); display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:var(--topic-accent); }
+    .topic-meta { margin:.2rem 0 0; font-size:.9rem; opacity:.75; }
+    .topic-items { display:grid; grid-auto-flow:column; grid-auto-columns:minmax(260px, 320px); gap:1rem; overflow-x:auto; padding-bottom:.5rem; scroll-snap-type:x proximity; }
+    .topic-items::-webkit-scrollbar { height:6px; }
+    .topic-items::-webkit-scrollbar-thumb { background:rgba(15,23,42,.25); border-radius:999px; }
+    .topic-item { display:flex; flex-direction:column; gap:.75rem; border-radius:20px; padding:1rem; border:1px solid var(--topic-border); background:rgba(255,255,255,.8); transition:.25s; scroll-snap-align:start; }
+    .topic-item:hover { transform:translateY(-4px); }
+    .topic-thumb { width:100%; border-radius:14px; object-fit:cover; aspect-ratio:4 / 3; }
+    .paper-title { font-weight:600; font-size:1.05rem; word-break:break-word; color:#0f172a; }
+    .paper-meta { font-size:.85rem; opacity:.7; margin:.3rem 0; }
+    .badge { position:relative; display:inline-flex; align-items:center; gap:.2rem; font-size:.72rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase; padding:.25rem .75rem; border-radius:999px; background:linear-gradient(135deg, rgba(205,155,249,.95), rgba(141,194,255,.95)); color:#111827; border:1px solid rgba(255,255,255,.7); box-shadow:0 6px 16px rgba(15,23,42,.15); margin-left:.4rem; }
+    .badge::after { content:""; position:absolute; inset:2px; border-radius:999px; background:linear-gradient(120deg, rgba(255,255,255,.65), rgba(255,255,255,0)); opacity:.7; pointer-events:none; }
+    .links a { font-size:.8rem; margin-right:.6rem; color:var(--topic-accent, var(--accent)); text-decoration:none; }
+
+    .papers { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; }
+    .paper-card { background:var(--card); padding:1rem; border-radius:12px; transition:.2s; }
+    .paper-card:hover { transform:translateY(-4px); }
+
+    .error-msg { opacity:0.7; font-size:0.9rem; margin-top:1rem; }
+
+    .scholar-card { display:flex; flex-direction:column; gap:1rem; }
+    .scholar-stats { display:flex; flex-wrap:wrap; gap:1rem; }
+    .scholar-stat { flex:1; min-width:140px; padding:1rem; border-radius:14px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); text-align:center; }
+    .scholar-stat strong { display:block; font-size:1.5rem; margin-bottom:.2rem; }
+    .scholar-stat span { font-size:.85rem; opacity:.75; }
+    .scholar-link { align-self:flex-start; display:inline-flex; align-items:center; gap:.4rem; padding:.55rem 1.1rem; border-radius:999px; border:1px solid rgba(255,255,255,.2); color:var(--text); text-decoration:none; background:rgba(255,255,255,.08); transition:.2s; }
+    .scholar-link:hover { transform:translateY(-2px); background:rgba(255,255,255,.15); }
+
+    footer { text-align:center; padding:2rem; opacity:.6; }
+
+    @media (max-width: 700px) {
+      .topic-items { grid-auto-columns:minmax(240px, 85%); }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="hero">
+    <div class="portrait-frame">
+      <img src="images/profile.jpg" alt="Portrait of Jingbo Wang" class="portrait-img" />
+    </div>
+    <div class="hero-text">
+      <h1>Jingbo Wang <span class="calligraphy">王靖博</span></h1>
+      <div class="subtitle">Embodied AI · Humanoid Robotics · Character Animation</div>
+      <div class="hero-links">
+        <a href="https://www.linkedin.com/in/jingbo-wang-aa211a171/" target="_blank" rel="noopener">
+          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg" alt="LinkedIn" />
+          <span>LinkedIn</span>
+        </a>
+        <a href="https://scholar.google.com/citations?user=GStTsxAAAAAJ" target="_blank" rel="noopener">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Google_Scholar_logo.svg" alt="Google Scholar" />
+          <span>Google Scholar</span>
+        </a>
+        <a href="mailto:wangjingbo1219@gmail.com" target="_blank" rel="noopener">
+          <img src="icons/gmail-new.jpg" alt="Gmail" />
+          <span>Gmail</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<section id="about">
+  <div class="card">
+    <h2>About</h2>
+    <p>
+        I am a research scientist working on <strong>embodied intelligence, humanoid robotics, and physics-based simulation</strong>, focusing on <strong>generalization-oriented humanoid skill learning and sim-to-real transfer</strong>. 
+        I obtained my <strong>PhD from The Chinese University of Hong Kong</strong> in 2023, advised by <strong>Prof. Dahua Lin</strong>.
+        I also spent research internships with <strong>NVIDIA (Omniverse)</strong>, <strong>SenseTime Research</strong>, <strong>Megvii Research</strong>, and <strong>Momenta</strong>. 
+        My work has been published in top-tier conferences such as <strong>CVPR, ICCV, ECCV, SIGGRAPH, NeurIPS, ICRA, etc</strong>, with more than <strong>10,000 citations</strong>.
+    </p>
+  </div>
+</section>
+
+<section id="publications">
+  <div class="card">
+    <h2>🔥 Recent Research Topics</h2>
+
+    <div class="topics-grid">
+      <article class="topic-card theme-violet">
+        <div class="topic-heading">
+          <div class="topic-icon">🤖</div>
+          <div>
+            <h3>Behavior Foundation Model</h3>
+            <p class="topic-meta">Universal whole-body controllers and teleoperation.</p>
+          </div>
+        </div>
+        <div class="topic-items">
+          <article class="topic-item">
+            <img src="projects/humanoid_wbc/bfm4humanoid/teaser.png" class="topic-thumb" alt="Behavior Foundation Model teaser" />
+            <div>
+              <div class="paper-title">Behavior Foundation Model for Humanoid Robots <span class="badge">ICRA 2026</span></div>
+              <div class="paper-meta">Universal Whole Body Controller with User Friendly Interface</div>
+              <div class="links">
+                <a href="https://arxiv.org/abs/2509.13780">PDF</a>
+                <a href="https://bfm4humanoid.github.io/">Project Page</a>
+              </div>
+            </div>
+          </article>
+          <article class="topic-item">
+            <img src="projects/humanoid_wbc/adamimic/teaser.png" class="topic-thumb" alt="AdaMimic teaser" />
+            <div>
+              <div class="paper-title">AdaMimic: Towards Adaptable Humanoid Control via Adaptive Motion Tracking <span class="badge">ICRA 2026</span></div>
+              <div class="paper-meta">Adaptive Motion Tracking for Humanoid Robots</div>
+              <div class="links">
+                <a href="https://taohuang13.github.io/adamimic.github.io/assets/paper.pdf">PDF</a>
+                <a href="https://github.com/InternRobotics/AdaMimic">Code</a>
+                <a href="https://taohuang13.github.io/adamimic.github.io/">Project Page</a>
+              </div>
+            </div>
+          </article>
+          <article class="topic-item">
+            <img src="projects/humanoid_wbc/unitracker/teaser.png" class="topic-thumb" alt="UniTracker teaser" />
+            <div>
+              <div class="paper-title">UniTracker: Learning Universal Whole-Body Motion Tracker for Humanoid Robots <span class="badge">Under Review</span></div>
+              <div class="paper-meta">Universal Whole Body Controller with Kinematics Motion Priors</div>
+              <div class="links">
+                <a href="https://arxiv.org/abs/2507.07356">PDF</a>
+                <a href="https://yinkangning0124.github.io/Humanoid-UniTracker/">Project Page</a>
+              </div>
+            </div>
+          </article>
+          <article class="topic-item">
+            <img src="projects/humanoid_wbc/clot/teaser.png" class="topic-thumb" alt="CLOT teaser" />
+            <div>
+              <div class="paper-title">CLOT: Closed-Loop Global Motion Tracking for Whole-Body Humanoid Teleoperation <span class="badge">Under Review</span></div>
+              <div class="paper-meta">Universal Whole Body Controller for PND Adam</div>
+              <div class="links">
+                <a href="https://arxiv.org/abs/2602.15060">PDF</a>
+                <a href="https://github.com/zhutengjie/CLOT">Code</a>
+                <a href="https://zhutengjie.github.io/CLOT.github.io/">Project Page</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </article>
+
+      <article class="topic-card theme-amber">
+        <div class="topic-heading">
+          <div class="topic-icon">🏀</div>
+          <div>
+            <h3>Agile Skill Learning</h3>
+            <p class="topic-meta">Sports-grade agility learned from human demonstrations.</p>
+          </div>
+        </div>
+        <div class="topic-items">
+          <article class="topic-item">
+            <img src="projects/humanoid_athleta/human_x/teaser.png" class="topic-thumb" alt="HumanX teaser" />
+            <div>
+              <div class="paper-title">HumanX: Toward Agile and Generalizable Humanoid Interaction Skills from Human Videos <span class="badge">Under Review</span></div>
+              <div class="paper-meta">Basketball Skill Imitation Learning</div>
+              <div class="links">
+                <a href="https://arxiv.org/abs/2602.02473">PDF</a>
+                <a href="https://github.com/wyhuai/humanx">Code</a>
+                <a href="https://wyhuai.github.io/human-x/">Project Page</a>
+              </div>
+            </div>
+          </article>
+          <article class="topic-item">
+            <img src="projects/humanoid_athleta/latent/teaser.png" class="topic-thumb" alt="LATENT teaser" />
+            <div>
+              <div class="paper-title">Learning Athletic Humanoid Tennis Skills from Imperfect Human Motion Data <span class="badge">Under Review</span></div>
+              <div class="paper-meta">Automatic Tennis Skills</div>
+              <div class="links">
+                <a href="https://arxiv.org/pdf/2603.12686">PDF</a>
+                <a href="https://github.com/GalaxyGeneralRobotics/LATENT">Code</a>
+                <a href="https://zzk273.github.io/LATENT/">Project Page</a>
+              </div>
+            </div>
+          </article>
+          <article class="topic-item">
+            <img src="projects/humanoid_athleta/smash/teaser.png" class="topic-thumb" alt="Smash teaser" />
+            <div>
+              <div class="paper-title">Mastering Scalable Whole-Body Skills for Humanoid Ping-Pong with Egocentric Vision <span class="badge">Under Review</span></div>
+              <div class="paper-meta">Table Tennis Skills in Egocentric Vision</div>
+              <div class="links">
+                <a href="https://mmlab.hk/Smash/">Project Page</a>
+              </div>
+            </div>
+          </article>
+          <article class="topic-item">
+            <img src="projects/humanoid_athleta/robostriker/teaser.png" class="topic-thumb" alt="RoboStriker teaser" />
+            <div>
+              <div class="paper-title">RoboStriker: Hierarchical Decision-Making for Autonomous Humanoid Boxing <span class="badge">Under Review</span></div>
+              <div class="paper-meta">Multi-Agent Boxing Skills</div>
+              <div class="links">
+                <a href="https://arxiv.org/pdf/2601.22517">PDF</a>
+                <a href="https://yinkangning0124.github.io/RoboStriker/">Project Page</a>
+              </div>
+            </div>
+          </article>
+          <article class="topic-item">
+            <img src="projects/humanoid_athleta/goalkeeper/teaser.png" class="topic-thumb" alt="Humanoid Goalkeeper teaser" />
+            <div>
+              <div class="paper-title">Humanoid Goalkeeper: Learning from Position Conditioned Task-Motion Constraints <span class="badge">Under Review</span></div>
+              <div class="paper-meta">Agile Goalkeeping Skills</div>
+              <div class="links">
+                <a href="https://humanoid-goalkeeper.github.io/Goalkeeper/static/Humanoid_Goalkeeper.pdf">PDF</a>
+                <a href="https://github.com/InternRobotics/Humanoid-Goalkeeper">Code</a>
+                <a href="https://humanoid-goalkeeper.github.io/Goalkeeper/">Project Page</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </article>
+
+      <article class="topic-card theme-cyan">
+        <div class="topic-heading">
+          <div class="topic-icon">📦</div>
+          <div>
+            <h3>Locomotion / Loco-Manipulation</h3>
+            <p class="topic-meta">Navigation and interaction policies for constrained terrains.</p>
+          </div>
+        </div>
+        <div class="topic-items">
+          <article class="topic-item">
+            <img src="projects/humanoid_locomanipulation/gallant/teaser.png" class="topic-thumb" alt="Gallant teaser" />
+            <div>
+              <div class="paper-title">Gallant: Voxel Grid-based Humanoid Locomotion and Local-navigation across 3D Constrained Terrains <span class="badge">CVPR 2026</span></div>
+              <div class="paper-meta">Perceptive Locomotion Controller for Diverse Terrains</div>
+              <div class="links">
+                <a href="https://arxiv.org/pdf/2511.14625">PDF</a>
+                <a href="https://github.com/InternRobotics/Gallant">Code</a>
+                <a href="https://gallantloco.github.io/">Project Page</a>
+              </div>
+            </div>
+          </article>
+          <article class="topic-item">
+            <img src="projects/humanoid_locomanipulation/physhsi/teaser.png" class="topic-thumb" alt="PhysHSI teaser" />
+            <div>
+              <div class="paper-title">PhysHSI: Towards a Real-World Generalizable and Natural Humanoid-Scene Interaction System <span class="badge">Under Review</span></div>
+              <div class="paper-meta">Human Like Loco-Manipulation Policy</div>
+              <div class="links">
+                <a href="https://arxiv.org/pdf/2511.14625">PDF</a>
+                <a href="https://github.com/InternRobotics/Gallant">Code</a>
+                <a href="https://gallantloco.github.io/">Project Page</a>
+              </div>
+            </div>
+          </article>
+          <article class="topic-item">
+            <img src="projects/humanoid_locomanipulation/xhugwbc/teaser.png" class="topic-thumb" alt="XHUGWBC teaser" />
+            <div>
+              <div class="paper-title">XHUGWBC: Scalable and General Whole-Body Control for Cross-Humanoid Locomotion <span class="badge">CVPR 2026</span></div>
+              <div class="paper-meta">Unified Cross-Humanoid Locomotion and Loco-Manipulation Controller</div>
+              <div class="links">
+                <a href="https://arxiv.org/pdf/2602.05791">PDF</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </article>
+
+      <article class="topic-card theme-rose">
+        <div class="topic-heading">
+          <div class="topic-icon">🎨</div>
+          <div>
+            <h3>Character Animation</h3>
+            <p class="topic-meta">Large-scale motion synthesis and human-scene interaction.</p>
+          </div>
+        </div>
+        <div class="topic-items">
+          <article class="topic-item">
+            <img src="projects/character_animation/tokenhsi/teaser.png" class="topic-thumb" alt="TokenHSI teaser" />
+            <div>
+              <div class="paper-title">TokenHSI: Unified Synthesis of Physical Human-Scene Interactions through Task Tokenization <span class="badge">CVPR 2025 · Oral</span></div>
+              <div class="paper-meta">Foundation Controller for Human-Scene Interaction</div>
+              <div class="links">
+                <a href="https://arxiv.org/abs/2503.19901">PDF</a>
+                <a href="https://github.com/liangpan99/TokenHSI">Code</a>
+                <a href="https://liangpan99.github.io/TokenHSI/">Project Page</a>
+              </div>
+            </div>
+          </article>
+          <article class="topic-item">
+            <img src="projects/character_animation/motionmillion/teaser.png" class="topic-thumb" alt="MotionMillion teaser" />
+            <div>
+              <div class="paper-title">Go to Zero: Towards Zero-shot Motion Generation with Million-scale Data <span class="badge">ICCV 2025 · Spotlight</span></div>
+              <div class="paper-meta">Scaled Text-to-Motion Generation Model with Million-scale Data</div>
+              <div class="links">
+                <a href="https://arxiv.org/abs/2507.07095">PDF</a>
+                <a href="https://github.com/VankouF/MotionMillion-Codes">Code</a>
+                <a href="https://vankouf.github.io/MotionMillion/">Project Page</a>
+              </div>
+            </div>
+          </article>
+          <article class="topic-item">
+            <img src="projects/character_animation/amdm/teaser.png" class="topic-thumb" alt="AMDM teaser" />
+            <div>
+              <div class="paper-title">AMDM: Interactive Character Control with Auto-Regressive Motion Diffusion Models <span class="badge">ACM SIGGRAPH 2025 (TOG) </span></div>
+              <div class="paper-meta">Control Auto-Regressive Motion Diffusion Models with Reinforcement Learning</div>
+              <div class="links">
+                <a href="https://dl.acm.org/doi/pdf/10.1145/3658140">PDF</a>
+                <a href="https://github.com/Yi-Shi94/AMDM">Code</a>
+                <a href="https://yi-shi94.github.io/amdm_page/">Project Page</a>
+              </div>
+            </div>
+          </article>
+          <article class="topic-item">
+            <img src="projects/character_animation/unihsi/teaser.png" class="topic-thumb" alt="UniHSI teaser" />
+            <div>
+              <div class="paper-title">UniHSI: Unified Human-Scene Interaction via Prompted Chain-of-Contacts <span class="badge">ICLR 2024 </span></div>
+              <div class="paper-meta">Character Learning with LLMs</div>
+              <div class="links">
+                <a href="https://xizaoqu.github.io/unihsi/static/paper/UniHSI.pdf">PDF</a>
+                <a href="https://github.com/InternRobotics/UniHSI">Code</a>
+                <a href="https://xizaoqu.github.io/unihsi/">Project Page</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+
+<footer>
+  © 2026 Jingbo Wang; Total Visitors:
+        <a href='https://www.counter12.com'><img src='https://www.counter12.com/img-xWZ216Z86zx2AZbb-77.gif' border='0' alt='web counter free'></a><script type='text/javascript' src='https://www.counter12.com/ad.js?id=xWZ216Z86zx2AZbb'></script></div> 
+</footer>
+
+
+
+</body>
+</html>
