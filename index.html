@@ -112,7 +112,7 @@
     nav { position:sticky; top:0; backdrop-filter:blur(10px); background:var(--nav-bg); display:flex; justify-content:center; gap:2rem; padding:1rem; z-index:10; }
     nav a { color:var(--accent); text-decoration:none; }
 
-    section { max-width:1400px; margin:auto; padding:2.5rem 1.5rem; }
+    section { max-width:1400px; margin:auto; padding:2.1rem 1.5rem; }
     .card { background:var(--card); padding:1.5rem; border-radius:16px; margin-bottom:2.5rem; box-shadow:0 6px 30px rgba(0,0,0,.25);}    
     .card p { line-height:1.8; }
 
@@ -136,6 +136,17 @@
     .badge { position:relative; display:inline-flex; align-items:center; gap:.2rem; font-size:.72rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase; padding:.25rem .75rem; border-radius:999px; background:linear-gradient(135deg, rgba(205,155,249,.95), rgba(141,194,255,.95)); color:#111827; border:1px solid rgba(255,255,255,.7); box-shadow:0 6px 16px rgba(15,23,42,.15); margin-left:.4rem; }
     .badge::after { content:""; position:absolute; inset:2px; border-radius:999px; background:linear-gradient(120deg, rgba(255,255,255,.65), rgba(255,255,255,0)); opacity:.7; pointer-events:none; }
     .links a { font-size:.8rem; margin-right:.6rem; color:var(--topic-accent, var(--accent)); text-decoration:none; }
+
+    .experience-grid, .education-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1.2rem; }
+    .experience-card, .education-card { position:relative; border-radius:20px; padding:1.15rem; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.08); box-shadow:0 18px 40px rgba(0,0,0,.25); display:flex; flex-direction:column; gap:.6rem; backdrop-filter:blur(6px); }
+    .experience-card::before, .education-card::before { content:""; position:absolute; inset:0; border-radius:20px; border:1px dashed rgba(255,255,255,.12); pointer-events:none; opacity:.5; }
+    .experience-role, .education-degree { font-size:1.1rem; font-weight:600; }
+    .experience-org, .education-school { font-size:.95rem; opacity:.85; }
+    .experience-meta, .education-meta { font-size:.85rem; opacity:.7; display:flex; flex-direction:column; gap:.1rem; }
+    .experience-desc, .education-desc { font-size:.9rem; line-height:1.5; opacity:.85; }
+    .experience-badge, .education-badge { align-self:flex-start; font-size:.7rem; text-transform:uppercase; letter-spacing:.15em; padding:.16rem .7rem; border-radius:999px; background:linear-gradient(120deg, rgba(205,155,249,.9), rgba(56,189,248,.85)); border:1px solid rgba(255,255,255,.4); color:#0f172a; box-shadow:0 6px 18px rgba(0,0,0,.25); position:relative; overflow:hidden; }
+    .experience-badge::after, .education-badge::after { content:""; position:absolute; inset:1px; border-radius:999px; background:linear-gradient(120deg, rgba(255,255,255,.55), rgba(255,255,255,0)); opacity:.7; pointer-events:none; }
+    .experience-location { font-size:.8rem; opacity:.65; display:flex; gap:.4rem; align-items:center; }
 
     .papers { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; }
     .paper-card { background:var(--card); padding:1rem; border-radius:12px; transition:.2s; }
@@ -469,6 +480,75 @@
   </div>
 </section>
 
+<section id="experience">
+  <div class="card">
+    <h2>Experience</h2>
+    <div class="experience-grid">
+      <article class="experience-card">
+        <span class="experience-badge">Full-time</span>
+        <div class="experience-role">Research Scientist and Team Lead</div>
+        <div class="experience-org">Shanghai Artificial Intelligence Laboratory</div>
+        <div class="experience-meta">
+          <span>Sep 2023 – Present · Shanghai · On-site</span>
+          <span class="experience-location">Leading humanoid robot control, character animation, physics simulation, and embodied AI initiatives.</span>
+        </div>
+      </article>
+      <article class="experience-card">
+        <span class="experience-badge">Full-time</span>
+        <div class="experience-role">Research Scientist Intern</div>
+        <div class="experience-org">NVIDIA · Toronto (Remote)</div>
+        <div class="experience-meta">
+          <span>Apr 2022 – Jun 2023</span>
+        </div>
+        <p class="experience-desc">Built pedestrian simulation frameworks for autonomous driving scenarios and large-scale simulation pipelines.</p>
+      </article>
+      <article class="experience-card">
+        <span class="experience-badge">Full-time</span>
+        <div class="experience-role">Research Assistant Intern</div>
+        <div class="experience-org">The Chinese University of Hong Kong</div>
+        <div class="experience-meta">
+          <span>Aug 2019 – Jul 2020 · Hong Kong · On-site</span>
+        </div>
+        <p class="experience-desc">Conducted research on human pose estimation systems for vision-based perception.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="education">
+  <div class="card">
+    <h2>Education</h2>
+    <div class="education-grid">
+      <article class="education-card">
+        <span class="education-badge">PhD</span>
+        <div class="education-degree">Doctor of Philosophy · Digital Human</div>
+        <div class="education-school">The Chinese University of Hong Kong</div>
+        <div class="education-meta">
+          <span>Aug 2020 – Aug 2023</span>
+        </div>
+        <p class="education-desc">Research on embodied intelligence, digital humans, and humanoid skill learning.</p>
+      </article>
+      <article class="education-card">
+        <span class="education-badge">MPhil</span>
+        <div class="education-degree">Master of Philosophy · Intelligence Science and Technology</div>
+        <div class="education-school">Peking University</div>
+        <div class="education-meta">
+          <span>Sep 2016 – Sep 2019</span>
+        </div>
+        <p class="education-desc">Focused on machine intelligence, control, and large-scale perception systems.</p>
+      </article>
+      <article class="education-card">
+        <span class="education-badge">BSc</span>
+        <div class="education-degree">Bachelor of Science · Information and Computing Science</div>
+        <div class="education-school">Beijing Institute of Technology</div>
+        <div class="education-meta">
+          <span>Sep 2012 – Jun 2016</span>
+        </div>
+        <p class="education-desc">Built a solid foundation in algorithms, numerical analysis, and robotics programming.</p>
+      </article>
+    </div>
+  </div>
+</section>
 
 </footer>
 
