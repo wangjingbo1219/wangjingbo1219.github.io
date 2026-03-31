@@ -170,6 +170,17 @@ footer { text-align:center; padding:2rem; opacity:.6; }
   .topic-items { grid-auto-columns:minmax(240px, 85%); }
 }
 
+@media (max-width: 900px) {
+  .experience-grid,
+  .education-grid { display:flex; gap:1rem; overflow-x:auto; padding-bottom:.75rem; scroll-snap-type:x proximity; }
+  .experience-card,
+  .education-card { min-width:280px; flex:0 0 80%; scroll-snap-align:center; }
+  .experience-grid::-webkit-scrollbar,
+  .education-grid::-webkit-scrollbar { height:6px; }
+  .experience-grid::-webkit-scrollbar-thumb,
+  .education-grid::-webkit-scrollbar-thumb { background:rgba(255,255,255,.25); border-radius:999px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .bg-layer,
   .bg-canvas::before,
