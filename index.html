@@ -3,9 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jingbo Wang (王靖博)</title>
+  <title>Jingbo Wang (王靖博) | Embodied AI & Humanoid Robotics</title>
+
+  <!-- Resource hints for external domains -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+  <link rel="dns-prefetch" href="https://upload.wikimedia.org" />
+  <link rel="dns-prefetch" href="https://www.counter12.com" />
+
+  <!-- Preload critical font -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" as="style" />
+  <meta name="description" content="Jingbo Wang is a research scientist working on embodied intelligence, humanoid robotics, and physics-based simulation at Shanghai AI Lab. PhD from CUHK." />
+  <meta name="keywords" content="Jingbo Wang, 王靖博, embodied AI, humanoid robotics, character animation, physics simulation, sim-to-real, reinforcement learning" />
+  <meta name="author" content="Jingbo Wang" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://wangjingbo1219.github.io/" />
+  <meta property="og:title" content="Jingbo Wang (王靖博) | Embodied AI & Humanoid Robotics" />
+  <meta property="og:description" content="Research scientist working on embodied intelligence, humanoid robotics, and physics-based simulation at Shanghai AI Lab." />
+  <meta property="og:image" content="https://wangjingbo1219.github.io/images/profile.jpg" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://wangjingbo1219.github.io/" />
+  <meta property="twitter:title" content="Jingbo Wang (王靖博) | Embodied AI & Humanoid Robotics" />
+  <meta property="twitter:description" content="Research scientist working on embodied intelligence, humanoid robotics, and physics-based simulation at Shanghai AI Lab." />
+  <meta property="twitter:image" content="https://wangjingbo1219.github.io/images/profile.jpg" />
 
   <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/jpeg" href="images/profile.jpg" />
 </head>
 
 <body>
@@ -13,21 +41,28 @@
 <div class="cursor-orb" aria-hidden="true"></div>
 <div class="cursor-glyph" aria-hidden="true"></div>
 
+<nav>
+  <a href="#about">About</a>
+  <a href="#publications">Research</a>
+  <a href="#experience">Experience</a>
+  <a href="#education">Education</a>
+</nav>
+
 <header>
   <div class="hero">
     <div class="portrait-frame">
-      <img src="images/profile.jpg" alt="Portrait of Jingbo Wang" class="portrait-img" />
+      <img src="images/profile.jpg" alt="Portrait of Jingbo Wang" class="portrait-img" loading="eager" width="220" height="220" />
     </div>
     <div class="hero-text">
       <h1>Jingbo Wang <span class="calligraphy">王靖博</span></h1>
       <div class="subtitle">Embodied AI · Humanoid Robotics · Character Animation</div>
       <div class="hero-links">
         <a href="https://www.linkedin.com/in/jingbo-wang-aa211a171/" target="_blank" rel="noopener">
-          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg" alt="LinkedIn" />
+          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg" alt="LinkedIn" loading="lazy" decoding="async" />
           <span>LinkedIn</span>
         </a>
         <a href="https://scholar.google.com/citations?user=GStTsxAAAAAJ" target="_blank" rel="noopener">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Google_Scholar_logo.svg" alt="Google Scholar" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Google_Scholar_logo.svg" alt="Google Scholar" loading="lazy" decoding="async" />
           <span>Google Scholar</span>
         </a>
         <a href="mailto:wangjingbo1219@gmail.com" target="_blank" rel="noopener">
@@ -67,7 +102,7 @@
         </div>
         <div class="topic-items">
           <article class="topic-item">
-            <img src="projects/humanoid_wbc/bfm4humanoid/teaser.png" class="topic-thumb" alt="Behavior Foundation Model teaser" />
+            <img src="projects/humanoid_wbc/bfm4humanoid/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="Behavior Foundation Model teaser" />
             <div>
               <div class="paper-title">Behavior Foundation Model for Humanoid Robots <span class="badge">ICRA 2026</span></div>
               <div class="paper-meta">Universal Whole Body Controller with User Friendly Interface</div>
@@ -78,7 +113,7 @@
             </div>
           </article>
           <article class="topic-item">
-            <img src="projects/humanoid_wbc/adamimic/teaser.png" class="topic-thumb" alt="AdaMimic teaser" />
+            <img src="projects/humanoid_wbc/adamimic/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="AdaMimic teaser" />
             <div>
               <div class="paper-title">AdaMimic: Towards Adaptable Humanoid Control via Adaptive Motion Tracking <span class="badge">ICRA 2026</span></div>
               <div class="paper-meta">Adaptive Motion Tracking for Humanoid Robots</div>
@@ -90,7 +125,7 @@
             </div>
           </article>
           <article class="topic-item">
-            <img src="projects/humanoid_wbc/unitracker/teaser.png" class="topic-thumb" alt="UniTracker teaser" />
+            <img src="projects/humanoid_wbc/unitracker/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="UniTracker teaser" />
             <div>
               <div class="paper-title">UniTracker: Learning Universal Whole-Body Motion Tracker for Humanoid Robots <span class="badge">Under Review</span></div>
               <div class="paper-meta">Universal Whole Body Controller with Kinematics Motion Priors</div>
@@ -101,7 +136,7 @@
             </div>
           </article>
           <article class="topic-item">
-            <img src="projects/humanoid_wbc/clot/teaser.png" class="topic-thumb" alt="CLOT teaser" />
+            <img src="projects/humanoid_wbc/clot/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="CLOT teaser" />
             <div>
               <div class="paper-title">CLOT: Closed-Loop Global Motion Tracking for Whole-Body Humanoid Teleoperation <span class="badge">Under Review</span></div>
               <div class="paper-meta">Universal Whole Body Controller for PND Adam</div>
@@ -125,7 +160,7 @@
         </div>
         <div class="topic-items">
           <article class="topic-item">
-            <img src="projects/humanoid_athleta/human_x/teaser.png" class="topic-thumb" alt="HumanX teaser" />
+            <img src="projects/humanoid_athleta/human_x/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="HumanX teaser" />
             <div>
               <div class="paper-title">HumanX: Toward Agile and Generalizable Humanoid Interaction Skills from Human Videos <span class="badge">Under Review</span></div>
               <div class="paper-meta">Imitation Learning on Basketball Skills</div>
@@ -137,7 +172,7 @@
             </div>
           </article>
           <article class="topic-item">
-            <img src="projects/humanoid_athleta/latent/teaser.png" class="topic-thumb" alt="LATENT teaser" />
+            <img src="projects/humanoid_athleta/latent/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="LATENT teaser" />
             <div>
               <div class="paper-title">Learning Athletic Humanoid Tennis Skills from Imperfect Human Motion Data <span class="badge">Under Review</span></div>
               <div class="paper-meta">Automatic Tennis Skills</div>
@@ -149,7 +184,7 @@
             </div>
           </article>
           <article class="topic-item">
-            <img src="projects/humanoid_athleta/smash/teaser.png" class="topic-thumb" alt="Smash teaser" />
+            <img src="projects/humanoid_athleta/smash/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="Smash teaser" />
             <div>
               <div class="paper-title">Mastering Scalable Whole-Body Skills for Humanoid Ping-Pong with Egocentric Vision <span class="badge">Under Review</span></div>
               <div class="paper-meta">Table Tennis Skills in Egocentric Vision</div>
@@ -159,7 +194,7 @@
             </div>
           </article>
           <article class="topic-item">
-            <img src="projects/humanoid_athleta/robostriker/teaser.png" class="topic-thumb" alt="RoboStriker teaser" />
+            <img src="projects/humanoid_athleta/robostriker/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="RoboStriker teaser" />
             <div>
               <div class="paper-title">RoboStriker: Hierarchical Decision-Making for Autonomous Humanoid Boxing <span class="badge">Under Review</span></div>
               <div class="paper-meta">Multi-Agent Boxing Skills</div>
@@ -170,7 +205,7 @@
             </div>
           </article>
           <article class="topic-item">
-            <img src="projects/humanoid_athleta/goalkeeper/teaser.png" class="topic-thumb" alt="Humanoid Goalkeeper teaser" />
+            <img src="projects/humanoid_athleta/goalkeeper/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="Humanoid Goalkeeper teaser" />
             <div>
               <div class="paper-title">Humanoid Goalkeeper: Learning from Position Conditioned Task-Motion Constraints <span class="badge">Under Review</span></div>
               <div class="paper-meta">Agile Goalkeeping Skills</div>
@@ -194,7 +229,7 @@
         </div>
         <div class="topic-items">
           <article class="topic-item">
-            <img src="projects/humanoid_locomanipulation/gallant/teaser.png" class="topic-thumb" alt="Gallant teaser" />
+            <img src="projects/humanoid_locomanipulation/gallant/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="Gallant teaser" />
             <div>
               <div class="paper-title">Gallant: Voxel Grid-based Humanoid Locomotion and Local-navigation across 3D Constrained Terrains <span class="badge">CVPR 2026</span></div>
               <div class="paper-meta">Perceptive Locomotion Controller for Diverse Terrains</div>
@@ -206,7 +241,7 @@
             </div>
           </article>
           <article class="topic-item">
-            <img src="projects/humanoid_locomanipulation/physhsi/teaser.png" class="topic-thumb" alt="PhysHSI teaser" />
+            <img src="projects/humanoid_locomanipulation/physhsi/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="PhysHSI teaser" />
             <div>
               <div class="paper-title">PhysHSI: Towards a Real-World Generalizable and Natural Humanoid-Scene Interaction System <span class="badge">Under Review</span></div>
               <div class="paper-meta">Human Like Loco-Manipulation Policy</div>
@@ -218,7 +253,7 @@
             </div>
           </article>
           <article class="topic-item">
-            <img src="projects/humanoid_locomanipulation/xhugwbc/teaser.png" class="topic-thumb" alt="XHUGWBC teaser" />
+            <img src="projects/humanoid_locomanipulation/xhugwbc/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="XHUGWBC teaser" />
             <div>
               <div class="paper-title">XHUGWBC: Scalable and General Whole-Body Control for Cross-Humanoid Locomotion <span class="badge">Under Review</span></div>
               <div class="paper-meta">Unified Cross-Humanoid Locomotion and Loco-Manipulation Controller</div>
@@ -240,7 +275,7 @@
         </div>
         <div class="topic-items">
           <article class="topic-item">
-            <img src="projects/character_animation/tokenhsi/teaser.png" class="topic-thumb" alt="TokenHSI teaser" />
+            <img src="projects/character_animation/tokenhsi/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="TokenHSI teaser" />
             <div>
               <div class="paper-title">TokenHSI: Unified Synthesis of Physical Human-Scene Interactions through Task Tokenization <span class="badge">CVPR 2025 · Oral</span></div>
               <div class="paper-meta">Foundation Controller for Human-Scene Interaction</div>
@@ -252,7 +287,7 @@
             </div>
           </article>
           <article class="topic-item">
-            <img src="projects/character_animation/motionmillion/teaser.png" class="topic-thumb" alt="MotionMillion teaser" />
+            <img src="projects/character_animation/motionmillion/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="MotionMillion teaser" />
             <div>
               <div class="paper-title">Go to Zero: Towards Zero-shot Motion Generation with Million-scale Data <span class="badge">ICCV 2025 · Spotlight</span></div>
               <div class="paper-meta">Scaled Text-to-Motion Generation Model with Million-scale Data</div>
@@ -264,7 +299,7 @@
             </div>
           </article>
           <article class="topic-item">
-            <img src="projects/character_animation/amdm/teaser.png" class="topic-thumb" alt="AMDM teaser" />
+            <img src="projects/character_animation/amdm/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="AMDM teaser" />
             <div>
               <div class="paper-title">AMDM: Interactive Character Control with Auto-Regressive Motion Diffusion Models <span class="badge">ACM SIGGRAPH 2025 (TOG) </span></div>
               <div class="paper-meta">Control Auto-Regressive Motion Diffusion Models with Reinforcement Learning</div>
@@ -276,7 +311,7 @@
             </div>
           </article>
           <article class="topic-item">
-            <img src="projects/character_animation/coohoi/teaser.png" class="topic-thumb" alt="AMDM teaser" />
+            <img src="projects/character_animation/coohoi/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="AMDM teaser" />
             <div>
               <div class="paper-title">CooHOI: Learning Cooperative Human-Object Interaction with Manipulated Object Dynamics <span class="badge">Neurips 2024 · Spotlight </span></div>
               <div class="paper-meta">Multi-Agent Cooperative Human-Object Interaction</div>
@@ -288,7 +323,7 @@
             </div>
           </article>
           <article class="topic-item">
-            <img src="projects/character_animation/unihsi/teaser.png" class="topic-thumb" alt="UniHSI teaser" />
+            <img src="projects/character_animation/unihsi/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="UniHSI teaser" />
             <div>
               <div class="paper-title">UniHSI: Unified Human-Scene Interaction via Prompted Chain-of-Contacts <span class="badge">ICLR 2024 · Spotlight </span></div>
               <div class="paper-meta">Character Learning with LLMs</div>
@@ -379,8 +414,14 @@
 <script src="main.js"></script>
 
 <footer>
-  © 2026 Jingbo Wang; Total Visitors:
-        <a href='https://www.counter12.com'><img src='https://www.counter12.com/img-xWZ216Z86zx2AZbb-77.gif' border='0' alt='web counter free'></a><script type='text/javascript' src='https://www.counter12.com/ad.js?id=xWZ216Z86zx2AZbb'></script></div> 
+  <div>© 2026 Jingbo Wang</div>
+  <div class="visitor-count">
+    Total Visitors:
+    <a href="https://www.counter12.com">
+      <img src="https://www.counter12.com/img-xWZ216Z86zx2AZbb-77.gif" alt="visitor counter" />
+    </a>
+    <script async src="https://www.counter12.com/ad.js?id=xWZ216Z86zx2AZbb"></script>
+  </div>
 </footer>
 
 </body>

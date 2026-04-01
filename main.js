@@ -5,7 +5,9 @@
   const parallaxLayers = Array.from(document.querySelectorAll('.bg-layer[data-depth]'));
   const pointerMedia = window.matchMedia('(pointer:fine)');
   const motionMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const enableCursorFx = cursorOrb && cursorGlyph && pointerMedia.matches && !motionMedia.matches;
+  const isTouchDevice = window.matchMedia('(hover: none)').matches || 'ontouchstart' in window;
+  const isLowPowerDevice = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
+  const enableCursorFx = cursorOrb && cursorGlyph && pointerMedia.matches && !motionMedia.matches && !isTouchDevice && !isLowPowerDevice;
   const INTERACTIVE_SELECTOR = 'a[href], button, [role="button"], [tabindex]:not([tabindex="-1"])';
   const state = {
     x: window.innerWidth / 2,
@@ -117,7 +119,18 @@
 
   const handlePointerRelease = () => setPressState(false);
 
-  const render = () => {
+  // Frame rate throttling for performance
+  let lastFrameTime = 0;
+  const targetFrameInterval = isLowPowerDevice ? 33 : 16; // 30fps for low power, 60fps otherwise
+
+  const render = (timestamp) => {
+    // Throttle frame rate
+    if (timestamp - lastFrameTime < targetFrameInterval) {
+      rafId = requestAnimationFrame(render);
+      return;
+    }
+    lastFrameTime = timestamp;
+
     state.x += (state.targetX - state.x) * 0.28;
     state.y += (state.targetY - state.y) * 0.28;
     state.shiftX += (state.shiftTargetX - state.shiftX) * 0.12;
@@ -133,14 +146,17 @@
       cursorGlyph.style.transform = `translate3d(${state.glyphX - 11}px, ${state.glyphY - 11}px, 0) rotate(${angle}deg)`;
     }
 
-    trails.forEach((trail, index) => {
-      const previous = index === 0 ? { x: state.x, y: state.y } : trails[index - 1];
-      const follow = Math.max(0.2 - index * 0.012, 0.08);
-      trail.x += (previous.x - trail.x) * follow;
-      trail.y += (previous.y - trail.y) * follow;
-      const scale = Math.max(1 - index * 0.07, 0.3);
-      trail.el.style.transform = `translate3d(${trail.x - TRAIL_SIZE / 2}px, ${trail.y - TRAIL_SIZE / 2}px, 0) scale(${scale})`;
-    });
+    // Only render trails if not too many pointer events queued
+    if (document.hidden === false) {
+      trails.forEach((trail, index) => {
+        const previous = index === 0 ? { x: state.x, y: state.y } : trails[index - 1];
+        const follow = Math.max(0.2 - index * 0.012, 0.08);
+        trail.x += (previous.x - trail.x) * follow;
+        trail.y += (previous.y - trail.y) * follow;
+        const scale = Math.max(1 - index * 0.07, 0.3);
+        trail.el.style.transform = `translate3d(${trail.x - TRAIL_SIZE / 2}px, ${trail.y - TRAIL_SIZE / 2}px, 0) scale(${scale})`;
+      });
+    }
 
     parallaxLayers.forEach((layer) => {
       const depth = Number(layer.dataset.depth || 0) / 100;
@@ -157,7 +173,7 @@
     updateCursorProps(0, 0);
     initTrails();
     resetPointer();
-    render();
+    rafId = requestAnimationFrame(render);
     document.addEventListener('pointermove', handlePointerMove, { passive: true });
     document.addEventListener('pointerdown', handlePointerMove, { passive: true });
     document.addEventListener('pointerdown', handlePointerDownInteractive, { passive: true });
@@ -175,6 +191,16 @@
       state.glyphY = state.y;
       state.glyphTargetX = state.x;
       state.glyphTargetY = state.y;
+    });
+
+    // Pause animations when tab is not visible
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      } else if (!document.hidden && !rafId) {
+        rafId = requestAnimationFrame(render);
+      }
     });
   } else {
     document.body.classList.remove('has-fancy-cursor');
