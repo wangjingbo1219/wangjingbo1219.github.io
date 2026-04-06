@@ -13,7 +13,7 @@
   <link rel="dns-prefetch" href="https://www.counter12.com" />
 
   <!-- Preload critical font -->
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" as="style" />
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Dancing+Script:wght@600&display=swap" as="style" />
   <meta name="description" content="Jingbo Wang is a research scientist working on embodied intelligence, humanoid robotics, and physics-based simulation at Shanghai AI Lab. PhD from CUHK." />
   <meta name="keywords" content="Jingbo Wang, 王靖博, embodied AI, humanoid robotics, character animation, physics simulation, sim-to-real, reinforcement learning" />
   <meta name="author" content="Jingbo Wang" />
@@ -42,20 +42,24 @@
 <div class="cursor-glyph" aria-hidden="true"></div>
 
 <nav>
-  <a href="#about">About</a>
-  <a href="#publications">Research</a>
-  <a href="#experience">Experience</a>
-  <a href="#education">Education</a>
+  <a href="#about" data-idx="00">About</a>
+  <a href="#publications" data-idx="01">Research</a>
+  <a href="#experience" data-idx="02">Experience</a>
+  <a href="#education" data-idx="03">Education</a>
 </nav>
 
 <header>
   <div class="hero">
-    <div class="portrait-frame">
-      <img src="images/profile.jpg" alt="Portrait of Jingbo Wang" class="portrait-img" loading="eager" width="220" height="220" />
+    <div class="portrait-wrap">
+      <div class="portrait-frame">
+        <img src="images/profile.jpg" alt="Portrait of Jingbo Wang" class="portrait-img" loading="eager" width="220" height="220" />
+      </div>
     </div>
     <div class="hero-text">
-      <h1>Jingbo Wang <span class="calligraphy">王靖博</span></h1>
+      <h1 class="glitch" data-text="Jingbo Wang">Jingbo Wang <span class="calligraphy">王靖博</span></h1>
       <div class="subtitle">Embodied AI · Humanoid Robotics · Character Animation</div>
+      <p class="hero-tagline">Research Scientist & Team Lead at Shanghai AI Lab<br>Building generalizable humanoid intelligence through physics-based simulation</p>
+      <div class="hud-status" aria-hidden="true"></div>
       <div class="hero-links">
         <a href="https://www.linkedin.com/in/jingbo-wang-aa211a171/" target="_blank" rel="noopener">
           <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg" alt="LinkedIn" loading="lazy" decoding="async" />
@@ -70,31 +74,39 @@
           <span>Gmail</span>
         </a>
       </div>
+      <div class="hero-highlights">
+        <span class="hero-stat">10,000+ Citations</span>
+        <span class="hero-stat">WAIC 2025 Rising Star</span>
+        <span class="hero-stat">PhD · CUHK</span>
+      </div>
     </div>
   </div>
 </header>
 
 
-<section id="about">
+<section id="about" class="reveal">
   <div class="card">
     <h2>About</h2>
     <p>
-        I am a research scientist working on <strong>embodied intelligence, humanoid robotics, and physics-based simulation</strong>, focusing on <strong>generalization-oriented humanoid skill learning and sim-to-real transfer</strong>. 
-        I obtained my <strong>PhD from The Chinese University of Hong Kong</strong> in 2023, advised by <strong>Prof. Dahua Lin</strong>.
-        I also spent research internships with <strong>NVIDIA (Omniverse)</strong>, <strong>SenseTime Research</strong>, <strong>Megvii Research</strong>, and <strong>Momenta</strong>. 
-        My work has been published in top-tier conferences such as <strong>CVPR, ICCV, ECCV, SIGGRAPH, NeurIPS, ICRA, etc</strong>, with more than <strong>10,000 citations</strong>.
+      I am a research scientist at <strong>Shanghai AI Lab</strong> working on <strong>embodied intelligence, humanoid robotics, and physics-based simulation</strong>. My research focuses on generalization-oriented humanoid skill learning and sim-to-real transfer.
+      I obtained my <strong>PhD from The Chinese University of Hong Kong</strong> in 2023, advised by <strong>Prof. Dahua Lin</strong>.
+      I have also held research internships at <strong>NVIDIA (Omniverse)</strong>, <strong>SenseTime Research</strong>, <strong>Megvii Research</strong>, and <strong>Momenta</strong>.
+    </p>
+    <p>
+      My work has been published in top-tier venues including <strong>CVPR, ICCV, ECCV, SIGGRAPH, NeurIPS, and ICRA</strong>, with several oral and spotlight presentations. My publications have been cited more than <strong>10,000 times</strong>.
+      I am a recipient of the <strong>WAIC 2025 Rising Star Award</strong> and winner of the <strong>COCO 2018 Panoptic Segmentation Challenge</strong>.
     </p>
   </div>
 </section>
 
-<section id="publications">
+<section id="publications" class="reveal">
   <div class="card">
     <h2>🔥 Recent Research Topics</h2>
 
     <div class="topics-grid">
       <article class="topic-card theme-violet">
         <div class="topic-heading">
-          <div class="topic-icon">🤖</div>
+          <div class="topic-icon">01</div>
           <div>
             <h3>Behavior Foundation Model</h3>
             <p class="topic-meta">Universal whole-body controllers and teleoperation.</p>
@@ -127,7 +139,7 @@
           <article class="topic-item">
             <img src="projects/humanoid_wbc/unitracker/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="UniTracker teaser" />
             <div>
-              <div class="paper-title">UniTracker: Learning Universal Whole-Body Motion Tracker for Humanoid Robots <span class="badge">Under Review</span></div>
+              <div class="paper-title">UniTracker: Learning Universal Whole-Body Motion Tracker for Humanoid Robots <span class="badge badge-review">Under Review</span></div>
               <div class="paper-meta">Universal Whole Body Controller with Kinematics Motion Priors</div>
               <div class="links">
                 <a href="https://arxiv.org/abs/2507.07356">PDF</a>
@@ -138,7 +150,7 @@
           <article class="topic-item">
             <img src="projects/humanoid_wbc/clot/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="CLOT teaser" />
             <div>
-              <div class="paper-title">CLOT: Closed-Loop Global Motion Tracking for Whole-Body Humanoid Teleoperation <span class="badge">Under Review</span></div>
+              <div class="paper-title">CLOT: Closed-Loop Global Motion Tracking for Whole-Body Humanoid Teleoperation <span class="badge badge-review">Under Review</span></div>
               <div class="paper-meta">Universal Whole Body Controller for PND Adam</div>
               <div class="links">
                 <a href="https://arxiv.org/abs/2602.15060">PDF</a>
@@ -152,7 +164,7 @@
 
       <article class="topic-card theme-amber">
         <div class="topic-heading">
-          <div class="topic-icon">🏀</div>
+          <div class="topic-icon">02</div>
           <div>
             <h3>Agile Skill Learning</h3>
             <p class="topic-meta">Sports-grade agility learned from human demonstrations.</p>
@@ -162,7 +174,7 @@
           <article class="topic-item">
             <img src="projects/humanoid_athleta/human_x/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="HumanX teaser" />
             <div>
-              <div class="paper-title">HumanX: Toward Agile and Generalizable Humanoid Interaction Skills from Human Videos <span class="badge">Under Review</span></div>
+              <div class="paper-title">HumanX: Toward Agile and Generalizable Humanoid Interaction Skills from Human Videos <span class="badge badge-review">Under Review</span></div>
               <div class="paper-meta">Imitation Learning on Basketball Skills</div>
               <div class="links">
                 <a href="https://arxiv.org/abs/2602.02473">PDF</a>
@@ -174,7 +186,7 @@
           <article class="topic-item">
             <img src="projects/humanoid_athleta/latent/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="LATENT teaser" />
             <div>
-              <div class="paper-title">Learning Athletic Humanoid Tennis Skills from Imperfect Human Motion Data <span class="badge">Under Review</span></div>
+              <div class="paper-title">Learning Athletic Humanoid Tennis Skills from Imperfect Human Motion Data <span class="badge badge-review">Under Review</span></div>
               <div class="paper-meta">Automatic Tennis Skills</div>
               <div class="links">
                 <a href="https://arxiv.org/pdf/2603.12686">PDF</a>
@@ -186,7 +198,7 @@
           <article class="topic-item">
             <img src="projects/humanoid_athleta/smash/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="Smash teaser" />
             <div>
-              <div class="paper-title">Mastering Scalable Whole-Body Skills for Humanoid Ping-Pong with Egocentric Vision <span class="badge">Under Review</span></div>
+              <div class="paper-title">Mastering Scalable Whole-Body Skills for Humanoid Ping-Pong with Egocentric Vision <span class="badge badge-review">Under Review</span></div>
               <div class="paper-meta">Table Tennis Skills in Egocentric Vision</div>
               <div class="links">
                 <a href="https://mmlab.hk/Smash/">Project Page</a>
@@ -196,7 +208,7 @@
           <article class="topic-item">
             <img src="projects/humanoid_athleta/robostriker/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="RoboStriker teaser" />
             <div>
-              <div class="paper-title">RoboStriker: Hierarchical Decision-Making for Autonomous Humanoid Boxing <span class="badge">Under Review</span></div>
+              <div class="paper-title">RoboStriker: Hierarchical Decision-Making for Autonomous Humanoid Boxing <span class="badge badge-review">Under Review</span></div>
               <div class="paper-meta">Multi-Agent Boxing Skills</div>
               <div class="links">
                 <a href="https://arxiv.org/pdf/2601.22517">PDF</a>
@@ -207,7 +219,7 @@
           <article class="topic-item">
             <img src="projects/humanoid_athleta/goalkeeper/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="Humanoid Goalkeeper teaser" />
             <div>
-              <div class="paper-title">Humanoid Goalkeeper: Learning from Position Conditioned Task-Motion Constraints <span class="badge">Under Review</span></div>
+              <div class="paper-title">Humanoid Goalkeeper: Learning from Position Conditioned Task-Motion Constraints <span class="badge badge-review">Under Review</span></div>
               <div class="paper-meta">Agile Goalkeeping Skills</div>
               <div class="links">
                 <a href="https://humanoid-goalkeeper.github.io/Goalkeeper/static/Humanoid_Goalkeeper.pdf">PDF</a>
@@ -221,7 +233,7 @@
 
       <article class="topic-card theme-cyan">
         <div class="topic-heading">
-          <div class="topic-icon">📦</div>
+          <div class="topic-icon">03</div>
           <div>
             <h3>Locomotion / Loco-Manipulation</h3>
             <p class="topic-meta">Navigation and interaction policies for constrained terrains.</p>
@@ -231,7 +243,7 @@
           <article class="topic-item">
             <img src="projects/humanoid_locomanipulation/gallant/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="Gallant teaser" />
             <div>
-              <div class="paper-title">Gallant: Voxel Grid-based Humanoid Locomotion and Local-navigation across 3D Constrained Terrains <span class="badge">CVPR 2026</span></div>
+              <div class="paper-title">Gallant: Voxel Grid-based Humanoid Locomotion and Local-Navigation Across 3D Constrained Terrains <span class="badge">CVPR 2026</span></div>
               <div class="paper-meta">Perceptive Locomotion Controller for Diverse Terrains</div>
               <div class="links">
                 <a href="https://arxiv.org/pdf/2511.14625">PDF</a>
@@ -243,19 +255,18 @@
           <article class="topic-item">
             <img src="projects/humanoid_locomanipulation/physhsi/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="PhysHSI teaser" />
             <div>
-              <div class="paper-title">PhysHSI: Towards a Real-World Generalizable and Natural Humanoid-Scene Interaction System <span class="badge">Under Review</span></div>
+              <div class="paper-title">PhysHSI: Towards a Real-World Generalizable Humanoid-Scene Interaction System <span class="badge badge-review">Under Review</span></div>
               <div class="paper-meta">Human Like Loco-Manipulation Policy</div>
               <div class="links">
-                <a href="https://arxiv.org/pdf/2511.14625">PDF</a>
-                <a href="https://github.com/InternRobotics/Gallant">Code</a>
-                <a href="https://gallantloco.github.io/">Project Page</a>
+                <a href="https://arxiv.org/abs/2502.09452">PDF</a>
+                <a href="https://physhsi.github.io/">Project Page</a>
               </div>
             </div>
           </article>
           <article class="topic-item">
             <img src="projects/humanoid_locomanipulation/xhugwbc/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="XHUGWBC teaser" />
             <div>
-              <div class="paper-title">XHUGWBC: Scalable and General Whole-Body Control for Cross-Humanoid Locomotion <span class="badge">Under Review</span></div>
+              <div class="paper-title">XHUGWBC: Scalable and General Whole-Body Control for Cross-Humanoid Locomotion <span class="badge badge-review">Under Review</span></div>
               <div class="paper-meta">Unified Cross-Humanoid Locomotion and Loco-Manipulation Controller</div>
               <div class="links">
                 <a href="https://arxiv.org/pdf/2602.05791">PDF</a>
@@ -267,7 +278,7 @@
 
       <article class="topic-card theme-rose">
         <div class="topic-heading">
-          <div class="topic-icon">🎨</div>
+          <div class="topic-icon">04</div>
           <div>
             <h3>Character Animation</h3>
             <p class="topic-meta">Large-scale motion synthesis and human-scene interaction.</p>
@@ -317,8 +328,8 @@
               <div class="paper-meta">Multi-Agent Cooperative Human-Object Interaction</div>
               <div class="links">
                 <a href="https://gao-jiawei.com/CooHOI/resources/CooHOI_v1014.pdf">PDF</a>
-                <a href="https://gao-jiawei.com/CooHOI/">Code</a>
-                <a href="https://github.com/Winston-Gu/CooHOI">Project Page</a>
+                <a href="https://github.com/Winston-Gu/CooHOI">Code</a>
+                <a href="https://gao-jiawei.com/CooHOI/">Project Page</a>
               </div>
             </div>
           </article>
@@ -341,71 +352,100 @@
   </div>
 </section>
 
-<section id="experience">
+<section id="experience" class="reveal">
   <div class="card">
     <h2>Experience</h2>
-    <div class="experience-grid">
-      <article class="experience-card">
-        <span class="experience-badge">Full-time</span>
-        <div class="experience-role">Research Scientist and Team Lead</div>
-        <div class="experience-org">Shanghai Artificial Intelligence Laboratory</div>
-        <div class="experience-meta">
-          <span>Sep 2023 – Present · Shanghai · On-site</span>
+    <div class="topics-grid">
+      <article class="topic-card theme-violet">
+        <div class="topic-heading">
+          <div class="topic-icon">05</div>
+          <div>
+            <h3>Research Career</h3>
+            <p class="topic-meta">Full-time and internship positions at leading labs.</p>
+          </div>
         </div>
-          <p class="experience-desc">Leading the research on humanoid robot control, character animation, physics simulation, and embodied AI.</p>
-      </article>
-      <article class="experience-card">
-        <span class="experience-badge">Part-time</span>
-        <div class="experience-role">Research Scientist Intern</div>
-        <div class="experience-org">NVIDIA </div>
-        <div class="experience-meta">
-          <span>Apr 2022 – Jun 2023 · Toronto · Remote</span>
+        <div class="topic-items">
+          <article class="topic-item exp-item">
+            <div class="exp-badge full-time">Full-time</div>
+            <div class="exp-role">Research Scientist and Team Lead</div>
+            <div class="exp-org">Shanghai AI Lab</div>
+            <div class="exp-period">Sep 2023 – Present</div>
+            <div class="exp-location">Shanghai, China</div>
+          </article>
+          <article class="topic-item exp-item">
+            <div class="exp-badge part-time">Intern</div>
+            <div class="exp-role">Research Scientist Intern</div>
+            <div class="exp-org">NVIDIA (Omniverse)</div>
+            <div class="exp-period">Apr 2022 – Jun 2023</div>
+            <div class="exp-location">Toronto, Canada</div>
+          </article>
+          <article class="topic-item exp-item">
+            <div class="exp-badge part-time">RA</div>
+            <div class="exp-role">Research Assistant</div>
+            <div class="exp-org">SenseTime Research</div>
+            <div class="exp-period">Dec 2019 – Mar 2022</div>
+            <div class="exp-location">Hong Kong</div>
+          </article>
+          <article class="topic-item exp-item">
+            <div class="exp-badge part-time">RA</div>
+            <div class="exp-role">Research Assistant</div>
+            <div class="exp-org">CUHK</div>
+            <div class="exp-period">Aug 2019 – Jul 2020</div>
+            <div class="exp-location">Hong Kong</div>
+          </article>
+          <article class="topic-item exp-item">
+            <div class="exp-badge part-time">Intern</div>
+            <div class="exp-role">Research Scientist Intern</div>
+            <div class="exp-org">Momenta</div>
+            <div class="exp-period">Mar 2019 – Aug 2019</div>
+            <div class="exp-location">Beijing, China</div>
+          </article>
+          <article class="topic-item exp-item">
+            <div class="exp-badge part-time">Intern</div>
+            <div class="exp-role">Research Scientist Intern</div>
+            <div class="exp-org">Megvii Research</div>
+            <div class="exp-period">Mar 2017 – Mar 2019</div>
+            <div class="exp-location">Beijing, China</div>
+          </article>
         </div>
-        <p class="experience-desc">Built pedestrian simulation frameworks for autonomous driving scenarios and large-scale simulation pipelines.</p>
-      </article>
-      <article class="experience-card">
-        <span class="experience-badge">Part-time</span>
-        <div class="experience-role">Research Assistant</div>
-        <div class="experience-org">The Chinese University of Hong Kong</div>
-        <div class="experience-meta">
-          <span>Aug 2019 – Jul 2020 · Hong Kong · On-site</span>
-        </div>
-        <p class="experience-desc">Conducted research on human pose estimation systems from vision-based perception.</p>
       </article>
     </div>
   </div>
 </section>
 
-<section id="education">
+<section id="education" class="reveal">
   <div class="card">
     <h2>Education</h2>
-    <div class="education-grid">
-      <article class="education-card">
-        <span class="education-badge">PhD</span>
-        <div class="education-degree">Doctor of Philosophy · Digital Human</div>
-        <div class="education-school">The Chinese University of Hong Kong</div>
-        <div class="education-meta">
-          <span>Aug 2020 – Aug 2023</span>
+    <div class="topics-grid">
+      <article class="topic-card theme-rose">
+        <div class="topic-heading">
+          <div class="topic-icon">06</div>
+          <div>
+            <h3>Academic Background</h3>
+            <p class="topic-meta">Degrees from top institutions in China and Hong Kong.</p>
+          </div>
         </div>
-        <p class="education-desc">Research on embodied intelligence, digital humans, and humanoid skill learning.</p>
-      </article>
-      <article class="education-card">
-        <span class="education-badge">MPhil</span>
-        <div class="education-degree">Master of Philosophy · Intelligence Science and Technology</div>
-        <div class="education-school">Peking University</div>
-        <div class="education-meta">
-          <span>Sep 2016 – Sep 2019</span>
+        <div class="topic-items">
+          <article class="topic-item edu-item">
+            <div class="edu-badge phd">PhD</div>
+            <div class="edu-degree">PhD in Digital Human</div>
+            <div class="edu-school">The Chinese University of Hong Kong</div>
+            <div class="edu-period">2020 – 2023</div>
+            <div class="edu-advisor">Advised by Prof. Dahua Lin</div>
+          </article>
+          <article class="topic-item edu-item">
+            <div class="edu-badge master">MPhil</div>
+            <div class="edu-degree">MPhil in Intelligence Science</div>
+            <div class="edu-school">Peking University</div>
+            <div class="edu-period">2016 – 2019</div>
+          </article>
+          <article class="topic-item edu-item">
+            <div class="edu-badge bachelor">BSc</div>
+            <div class="edu-degree">BSc in Information Science</div>
+            <div class="edu-school">Beijing Institute of Technology</div>
+            <div class="edu-period">2012 – 2016</div>
+          </article>
         </div>
-        <p class="education-desc">Focused on machine intelligence, control, and real-time perception systems.</p>
-      </article>
-      <article class="education-card">
-        <span class="education-badge">BSc</span>
-        <div class="education-degree">Bachelor of Science · Information and Computing Science</div>
-        <div class="education-school">Beijing Institute of Technology</div>
-        <div class="education-meta">
-          <span>Sep 2012 – Jun 2016</span>
-        </div>
-        <p class="education-desc">Built a solid foundation in algorithms, numerical analysis, and robotics programming.</p>
       </article>
     </div>
   </div>
@@ -415,6 +455,7 @@
 <script src="bg-animation.js"></script>
 
 <footer>
+  <a href="#" class="back-to-top" aria-label="Back to top">Back to top</a>
   <div>© 2026 Jingbo Wang</div>
   <div class="visitor-count">
     Total Visitors:

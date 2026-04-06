@@ -131,10 +131,10 @@
     }
     lastFrameTime = timestamp;
 
-    state.x += (state.targetX - state.x) * 0.28;
-    state.y += (state.targetY - state.y) * 0.28;
-    state.shiftX += (state.shiftTargetX - state.shiftX) * 0.12;
-    state.shiftY += (state.shiftTargetY - state.shiftY) * 0.12;
+    state.x += (state.targetX - state.x) * 0.18;
+    state.y += (state.targetY - state.y) * 0.18;
+    state.shiftX += (state.shiftTargetX - state.shiftX) * 0.08;
+    state.shiftY += (state.shiftTargetY - state.shiftY) * 0.08;
     state.glyphX = state.glyphTargetX;
     state.glyphY = state.glyphTargetY;
 
@@ -150,7 +150,7 @@
     if (document.hidden === false) {
       trails.forEach((trail, index) => {
         const previous = index === 0 ? { x: state.x, y: state.y } : trails[index - 1];
-        const follow = Math.max(0.2 - index * 0.012, 0.08);
+        const follow = Math.max(0.15 - index * 0.01, 0.05);
         trail.x += (previous.x - trail.x) * follow;
         trail.y += (previous.y - trail.y) * follow;
         const scale = Math.max(1 - index * 0.07, 0.3);
@@ -225,4 +225,62 @@
     document.body.appendChild(burst);
     burst.addEventListener('animationend', () => burst.remove());
   });
+
+  // --- HUD status typing effect ---
+  const hudStatus = document.querySelector('.hud-status');
+  if (hudStatus) {
+    const hudText = 'SYSTEM ONLINE \u00b7 RESEARCH ACTIVE \u00b7 NODE: SHANGHAI';
+    let hudIndex = 0;
+    const cursor = document.createElement('span');
+    cursor.className = 'hud-cursor';
+    hudStatus.appendChild(cursor);
+    const typeNext = () => {
+      if (hudIndex < hudText.length) {
+        cursor.before(hudText[hudIndex]);
+        hudIndex++;
+        setTimeout(typeNext, 40 + Math.random() * 30);
+      }
+    };
+    setTimeout(typeNext, 1200);
+  }
+
+  // --- Active nav highlighting on scroll ---
+  const navLinks = document.querySelectorAll('nav a[href^="#"]');
+  const sections = document.querySelectorAll('section[id]');
+
+  if (sections.length && navLinks.length) {
+    const navObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          navLinks.forEach((link) => {
+            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { rootMargin: '-20% 0px -60% 0px', threshold: 0 });
+
+    sections.forEach((section) => navObserver.observe(section));
+  }
+
+  // --- Scroll-triggered section reveal ---
+  const revealSections = document.querySelectorAll('section.reveal');
+
+  if (revealSections.length) {
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          // Stagger topic-items within the revealed section
+          const items = entry.target.querySelectorAll('.topic-item');
+          items.forEach((item, i) => {
+            setTimeout(() => item.classList.add('is-revealed'), 80 + i * 70);
+          });
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -60px 0px', threshold: 0.05 });
+
+    revealSections.forEach((section) => revealObserver.observe(section));
+  }
 })();

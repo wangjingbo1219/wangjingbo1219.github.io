@@ -12,7 +12,7 @@
     inset: '0',
     zIndex: '-2',
     pointerEvents: 'none',
-    opacity: '0.7'
+    opacity: '0.85'
   });
 
   const existing = document.getElementById('robotics-bg');
@@ -26,16 +26,16 @@
 
   // Configuration
   const config = {
-    nodeCount: 35,
-    connectionDistance: 140,
-    mouseDistance: 180,
+    nodeCount: 50,
+    connectionDistance: 150,
+    mouseDistance: 200,
     gridSize: 50,
-    hexagonCount: 6,
-    particleCount: 20,
-    chainCount: 3,
-    skeletonCount: 2,
-    trajectoryCount: 4,
-    mocapCount: 30
+    hexagonCount: 8,
+    particleCount: 30,
+    chainCount: 4,
+    skeletonCount: 3,
+    trajectoryCount: 5,
+    mocapCount: 45
   };
 
   // Resize handler
@@ -602,7 +602,7 @@
     const offsetX = (time * 8) % config.gridSize;
     const offsetY = (time * 4) % config.gridSize;
 
-    ctx.strokeStyle = 'rgba(99, 102, 241, 0.06)';
+    ctx.strokeStyle = 'rgba(99, 102, 241, 0.09)';
     ctx.lineWidth = 1;
 
     for (let x = offsetX; x < window.innerWidth; x += config.gridSize) {
@@ -619,7 +619,7 @@
       ctx.stroke();
     }
 
-    ctx.fillStyle = 'rgba(99, 102, 241, 0.12)';
+    ctx.fillStyle = 'rgba(99, 102, 241, 0.18)';
     for (let x = offsetX; x < window.innerWidth; x += config.gridSize) {
       for (let y = offsetY; y < window.innerHeight; y += config.gridSize) {
         const dist = Math.hypot(x - mouse.x, y - mouse.y);
@@ -646,7 +646,7 @@
       for (let j = i + 1; j < nodes.length; j++) {
         const d = distance(nodes[i], nodes[j]);
         if (d < config.connectionDistance) {
-          const alpha = (1 - d / config.connectionDistance) * 0.25;
+          const alpha = (1 - d / config.connectionDistance) * 0.35;
           ctx.beginPath();
           ctx.moveTo(nodes[i].x, nodes[i].y);
           ctx.lineTo(nodes[j].x, nodes[j].y);
@@ -659,7 +659,7 @@
       if (mouse.active) {
         const d = distance(nodes[i], mouse);
         if (d < config.mouseDistance) {
-          const alpha = (1 - d / config.mouseDistance) * 0.35;
+          const alpha = (1 - d / config.mouseDistance) * 0.5;
           ctx.beginPath();
           ctx.moveTo(nodes[i].x, nodes[i].y);
           ctx.lineTo(mouse.x, mouse.y);
@@ -715,6 +715,35 @@
       p.update();
       p.draw();
     });
+
+    // HUD crosshair & coordinate readout near mouse
+    if (mouse.active && mouse.x !== null) {
+      const mx = mouse.x, my = mouse.y;
+      const crossSize = 12;
+      const gap = 4;
+      ctx.strokeStyle = 'rgba(34, 211, 238, 0.3)';
+      ctx.lineWidth = 1;
+      // Crosshair lines with gap
+      ctx.beginPath();
+      ctx.moveTo(mx - crossSize, my); ctx.lineTo(mx - gap, my);
+      ctx.moveTo(mx + gap, my); ctx.lineTo(mx + crossSize, my);
+      ctx.moveTo(mx, my - crossSize); ctx.lineTo(mx, my - gap);
+      ctx.moveTo(mx, my + gap); ctx.lineTo(mx, my + crossSize);
+      ctx.stroke();
+      // Corner brackets
+      const bSize = 8;
+      ctx.strokeStyle = 'rgba(167, 139, 250, 0.25)';
+      ctx.beginPath();
+      ctx.moveTo(mx - crossSize - 2, my - crossSize + bSize); ctx.lineTo(mx - crossSize - 2, my - crossSize - 2); ctx.lineTo(mx - crossSize + bSize, my - crossSize - 2);
+      ctx.moveTo(mx + crossSize - bSize, my - crossSize - 2); ctx.lineTo(mx + crossSize + 2, my - crossSize - 2); ctx.lineTo(mx + crossSize + 2, my - crossSize + bSize);
+      ctx.moveTo(mx + crossSize + 2, my + crossSize - bSize); ctx.lineTo(mx + crossSize + 2, my + crossSize + 2); ctx.lineTo(mx + crossSize - bSize, my + crossSize + 2);
+      ctx.moveTo(mx - crossSize + bSize, my + crossSize + 2); ctx.lineTo(mx - crossSize - 2, my + crossSize + 2); ctx.lineTo(mx - crossSize - 2, my + crossSize - bSize);
+      ctx.stroke();
+      // Coordinate readout
+      ctx.font = '9px "JetBrains Mono", monospace';
+      ctx.fillStyle = 'rgba(34, 211, 238, 0.35)';
+      ctx.fillText(`X:${Math.round(mx)} Y:${Math.round(my)}`, mx + crossSize + 6, my - crossSize - 4);
+    }
 
     requestAnimationFrame(animate);
   }
