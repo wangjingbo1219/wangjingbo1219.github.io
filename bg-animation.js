@@ -12,7 +12,7 @@
     inset: '0',
     zIndex: '-2',
     pointerEvents: 'none',
-    opacity: '0.85'
+    opacity: '0.72'
   });
 
   const existing = document.getElementById('robotics-bg');
@@ -26,16 +26,17 @@
 
   // Configuration
   const config = {
-    nodeCount: 50,
-    connectionDistance: 150,
+    nodeCount: 42,
+    connectionDistance: 170,
     mouseDistance: 200,
-    gridSize: 50,
-    hexagonCount: 8,
-    particleCount: 30,
-    chainCount: 4,
-    skeletonCount: 3,
-    trajectoryCount: 5,
-    mocapCount: 45
+    gridSize: 58,
+    hexagonCount: 5,
+    particleCount: 22,
+    chainCount: 3,
+    skeletonCount: 2,
+    trajectoryCount: 4,
+    mocapCount: 32,
+    ribbonCount: 5
   };
 
   // Resize handler
@@ -45,13 +46,20 @@
     height = canvas.height = window.innerHeight * dpr;
     canvas.style.width = window.innerWidth + 'px';
     canvas.style.height = window.innerHeight + 'px';
-    ctx.scale(dpr, dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
   // Utility functions
   const random = (min, max) => Math.random() * (max - min) + min;
   const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
   const lerp = (a, b, t) => a + (b - a) * t;
+  const palette = {
+    blue: '158, 203, 255',
+    cyan: '125, 211, 252',
+    violet: '216, 180, 254',
+    gold: '255, 208, 138',
+    ink: '8, 17, 32'
+  };
 
   // Neural Network Node (representing joints/connection points)
   class Node {
@@ -103,18 +111,18 @@
           else ctx.lineTo(x, y);
         }
         ctx.closePath();
-        ctx.fillStyle = `rgba(205, 155, 249, ${0.35 + Math.sin(this.phase) * 0.15})`;
+        ctx.fillStyle = `rgba(${palette.violet}, ${0.24 + Math.sin(this.phase) * 0.08})`;
         ctx.fill();
-        ctx.strokeStyle = 'rgba(205, 155, 249, 0.5)';
+        ctx.strokeStyle = `rgba(${palette.violet}, 0.36)`;
         ctx.lineWidth = 1;
         ctx.stroke();
       } else {
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(56, 189, 248, ${0.4 + Math.sin(this.phase) * 0.25})`;
+        ctx.fillStyle = `rgba(${palette.blue}, ${0.28 + Math.sin(this.phase) * 0.14})`;
         ctx.fill();
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius * 2.5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(56, 189, 248, ${0.08 + Math.sin(this.phase) * 0.04})`;
+        ctx.fillStyle = `rgba(${palette.blue}, ${0.06 + Math.sin(this.phase) * 0.03})`;
         ctx.fill();
       }
     }
@@ -166,7 +174,7 @@
         else ctx.lineTo(x, y);
       }
       ctx.closePath();
-      ctx.strokeStyle = `rgba(139, 92, 246, ${this.opacity})`;
+      ctx.strokeStyle = `rgba(${palette.blue}, ${this.opacity * 0.72})`;
       ctx.lineWidth = 1;
       ctx.stroke();
 
@@ -179,7 +187,7 @@
         else ctx.lineTo(x, y);
       }
       ctx.closePath();
-      ctx.strokeStyle = `rgba(236, 72, 153, ${this.opacity * 0.6})`;
+      ctx.strokeStyle = `rgba(${palette.gold}, ${this.opacity * 0.36})`;
       ctx.stroke();
       ctx.restore();
     }
@@ -199,7 +207,7 @@
       this.joints = [];
       this.phase = random(0, Math.PI * 2);
       this.speed = random(0.008, 0.015);
-      this.color = Math.random() > 0.5 ? { r: 14, g: 165, b: 233 } : { r: 139, g: 92, b: 246 };
+      this.color = Math.random() > 0.5 ? { r: 158, g: 203, b: 255 } : { r: 216, g: 180, b: 254 };
 
       for (let i = 0; i <= this.segments; i++) {
         this.joints.push({
@@ -331,30 +339,30 @@
       ctx.beginPath();
       ctx.moveTo(hipX, hipY);
       ctx.quadraticCurveTo(hipX + Math.sin(time) * 3, hipY - 25, spineTopX, spineTopY);
-      ctx.strokeStyle = 'rgba(205, 155, 249, 0.5)';
+      ctx.strokeStyle = `rgba(${palette.violet}, 0.34)`;
       ctx.lineWidth = 3;
       ctx.stroke();
 
       // Draw head
       ctx.beginPath();
       ctx.arc(headX, headY, 12, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(205, 155, 249, 0.6)';
+      ctx.strokeStyle = `rgba(${palette.violet}, 0.38)`;
       ctx.lineWidth = 2;
       ctx.stroke();
 
       // Head tracking dot
       ctx.beginPath();
       ctx.arc(headX + 3, headY - 2, 2, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(205, 155, 249, 0.8)';
+      ctx.fillStyle = `rgba(${palette.violet}, 0.5)`;
       ctx.fill();
 
       // Draw arms
-      this.drawLimb(spineTopX - 8, spineTopY + 5, leftArmAngle, 35, 'rgba(56, 189, 248, 0.5)');
-      this.drawLimb(spineTopX + 8, spineTopY + 5, rightArmAngle, 35, 'rgba(56, 189, 248, 0.5)');
+      this.drawLimb(spineTopX - 8, spineTopY + 5, leftArmAngle, 35, `rgba(${palette.blue}, 0.34)`);
+      this.drawLimb(spineTopX + 8, spineTopY + 5, rightArmAngle, 35, `rgba(${palette.blue}, 0.34)`);
 
       // Draw legs
-      this.drawLimb(hipX - 8, hipY, leftLegAngle, 40, 'rgba(236, 72, 153, 0.5)');
-      this.drawLimb(hipX + 8, hipY, rightLegAngle, 40, 'rgba(236, 72, 153, 0.5)');
+      this.drawLimb(hipX - 8, hipY, leftLegAngle, 40, `rgba(${palette.gold}, 0.28)`);
+      this.drawLimb(hipX + 8, hipY, rightLegAngle, 40, `rgba(${palette.gold}, 0.28)`);
 
       // Joint markers
       const joints = [
@@ -406,7 +414,7 @@
       this.height = random(60, 150);
       this.phase = random(0, Math.PI * 2);
       this.speed = random(0.01, 0.02);
-      this.color = Math.random() > 0.5 ? '14, 165, 233' : '16, 185, 129';
+      this.color = Math.random() > 0.5 ? palette.blue : palette.gold;
       this.duration = random(120, 180);
       this.progress = 0;
     }
@@ -516,7 +524,7 @@
         for (let i = 1; i < this.trail.length; i++) {
           ctx.lineTo(this.trail[i].x, this.trail[i].y);
         }
-        ctx.strokeStyle = `rgba(244, 114, 182, 0.15)`;
+        ctx.strokeStyle = `rgba(${palette.violet}, 0.1)`;
         ctx.lineWidth = 1;
         ctx.stroke();
       }
@@ -524,7 +532,7 @@
       // Draw marker
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(244, 114, 182, ${0.5 + Math.sin(this.phase * 2) * 0.2})`;
+      ctx.fillStyle = `rgba(${palette.violet}, ${0.32 + Math.sin(this.phase * 2) * 0.12})`;
       ctx.fill();
 
       // Cross marker (typical mocap style)
@@ -533,7 +541,7 @@
       ctx.lineTo(this.x + this.size * 1.5, this.y);
       ctx.moveTo(this.x, this.y - this.size * 1.5);
       ctx.lineTo(this.x, this.y + this.size * 1.5);
-      ctx.strokeStyle = `rgba(244, 114, 182, ${0.3})`;
+      ctx.strokeStyle = `rgba(${palette.violet}, ${0.18})`;
       ctx.lineWidth = 1;
       ctx.stroke();
     }
@@ -555,7 +563,7 @@
       this.size = random(1, 2.5);
       this.trail = [];
       this.maxTrail = 12;
-      this.color = Math.random() > 0.5 ? '14, 165, 233' : '236, 72, 153';
+      this.color = Math.random() > 0.5 ? palette.blue : palette.violet;
     }
 
     update() {
@@ -596,13 +604,65 @@
     }
   }
 
+  // Cinematic light ribbon inspired by long-exposure motion studies.
+  class LightRibbon {
+    constructor(index) {
+      this.index = index;
+      this.reset();
+    }
+
+    reset() {
+      this.anchorY = random(window.innerHeight * 0.08, window.innerHeight * 0.92);
+      this.amplitude = random(42, 120);
+      this.wave = random(0.0025, 0.0055);
+      this.speed = random(0.004, 0.009);
+      this.phase = random(0, Math.PI * 2);
+      this.width = random(1.2, 2.8);
+      this.alpha = random(0.12, 0.24);
+      this.color = [palette.blue, palette.violet, palette.gold][this.index % 3];
+      this.tilt = random(-0.18, 0.18);
+    }
+
+    update() {
+      this.phase += this.speed;
+    }
+
+    draw() {
+      const steps = 90;
+      ctx.save();
+      ctx.globalCompositeOperation = 'screen';
+      ctx.beginPath();
+      for (let i = 0; i <= steps; i++) {
+        const p = i / steps;
+        const x = p * window.innerWidth;
+        const drift = Math.sin(this.phase + p * Math.PI * 2) * this.amplitude;
+        const detail = Math.sin(this.phase * 1.8 + p * Math.PI * 7) * this.amplitude * 0.18;
+        const y = this.anchorY + drift + detail + (p - 0.5) * window.innerWidth * this.tilt;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = `rgba(${this.color}, ${this.alpha})`;
+      ctx.lineWidth = this.width;
+      ctx.lineCap = 'round';
+      ctx.shadowColor = `rgba(${this.color}, ${this.alpha * 1.8})`;
+      ctx.shadowBlur = 22;
+      ctx.stroke();
+
+      ctx.strokeStyle = `rgba(255, 255, 255, ${this.alpha * 0.22})`;
+      ctx.lineWidth = 0.7;
+      ctx.shadowBlur = 0;
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
   // Animated Grid
   function drawGrid() {
     const time = frameCount * 0.008;
     const offsetX = (time * 8) % config.gridSize;
     const offsetY = (time * 4) % config.gridSize;
 
-    ctx.strokeStyle = 'rgba(99, 102, 241, 0.09)';
+    ctx.strokeStyle = `rgba(${palette.blue}, 0.052)`;
     ctx.lineWidth = 1;
 
     for (let x = offsetX; x < window.innerWidth; x += config.gridSize) {
@@ -619,7 +679,7 @@
       ctx.stroke();
     }
 
-    ctx.fillStyle = 'rgba(99, 102, 241, 0.18)';
+    ctx.fillStyle = `rgba(${palette.blue}, 0.11)`;
     for (let x = offsetX; x < window.innerWidth; x += config.gridSize) {
       for (let y = offsetY; y < window.innerHeight; y += config.gridSize) {
         const dist = Math.hypot(x - mouse.x, y - mouse.y);
@@ -631,6 +691,32 @@
     }
   }
 
+  function drawAtmosphere() {
+    const time = frameCount * 0.006;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+
+    const scanY = (Math.sin(time * 0.45) * 0.5 + 0.5) * h;
+    const scan = ctx.createLinearGradient(0, scanY - 80, 0, scanY + 80);
+    scan.addColorStop(0, 'rgba(158, 203, 255, 0)');
+    scan.addColorStop(0.5, 'rgba(158, 203, 255, 0.055)');
+    scan.addColorStop(1, 'rgba(158, 203, 255, 0)');
+    ctx.fillStyle = scan;
+    ctx.fillRect(0, scanY - 80, w, 160);
+
+    const halo = ctx.createRadialGradient(w * 0.68, h * 0.28, 0, w * 0.68, h * 0.28, Math.max(w, h) * 0.62);
+    halo.addColorStop(0, 'rgba(216, 180, 254, 0.075)');
+    halo.addColorStop(0.45, 'rgba(158, 203, 255, 0.04)');
+    halo.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = halo;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.restore();
+  }
+
   // Initialize entities
   const nodes = Array.from({ length: config.nodeCount }, () => new Node());
   const hexagons = Array.from({ length: config.hexagonCount }, () => new Hexagon());
@@ -639,6 +725,7 @@
   const trajectories = Array.from({ length: config.trajectoryCount }, () => new TrajectoryArc());
   const mocapMarkers = Array.from({ length: config.mocapCount }, () => new MocapMarker());
   const particles = Array.from({ length: config.particleCount }, () => new MotionParticle());
+  const ribbons = Array.from({ length: config.ribbonCount }, (_, index) => new LightRibbon(index));
 
   // Draw connections between nodes
   function drawConnections() {
@@ -650,7 +737,7 @@
           ctx.beginPath();
           ctx.moveTo(nodes[i].x, nodes[i].y);
           ctx.lineTo(nodes[j].x, nodes[j].y);
-          ctx.strokeStyle = `rgba(139, 92, 246, ${alpha})`;
+          ctx.strokeStyle = `rgba(${palette.blue}, ${alpha * 0.65})`;
           ctx.lineWidth = 1;
           ctx.stroke();
         }
@@ -663,7 +750,7 @@
           ctx.beginPath();
           ctx.moveTo(nodes[i].x, nodes[i].y);
           ctx.lineTo(mouse.x, mouse.y);
-          ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
+          ctx.strokeStyle = `rgba(${palette.gold}, ${alpha * 0.8})`;
           ctx.lineWidth = 1.2;
           ctx.stroke();
         }
@@ -677,7 +764,13 @@
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
     // Draw layers from back to front
+    drawAtmosphere();
     drawGrid();
+
+    ribbons.forEach(r => {
+      r.update();
+      r.draw();
+    });
 
     hexagons.forEach(h => {
       h.update();
@@ -721,7 +814,7 @@
       const mx = mouse.x, my = mouse.y;
       const crossSize = 12;
       const gap = 4;
-      ctx.strokeStyle = 'rgba(34, 211, 238, 0.3)';
+      ctx.strokeStyle = `rgba(${palette.blue}, 0.25)`;
       ctx.lineWidth = 1;
       // Crosshair lines with gap
       ctx.beginPath();
@@ -732,7 +825,7 @@
       ctx.stroke();
       // Corner brackets
       const bSize = 8;
-      ctx.strokeStyle = 'rgba(167, 139, 250, 0.25)';
+      ctx.strokeStyle = `rgba(${palette.violet}, 0.22)`;
       ctx.beginPath();
       ctx.moveTo(mx - crossSize - 2, my - crossSize + bSize); ctx.lineTo(mx - crossSize - 2, my - crossSize - 2); ctx.lineTo(mx - crossSize + bSize, my - crossSize - 2);
       ctx.moveTo(mx + crossSize - bSize, my - crossSize - 2); ctx.lineTo(mx + crossSize + 2, my - crossSize - 2); ctx.lineTo(mx + crossSize + 2, my - crossSize + bSize);
@@ -741,7 +834,7 @@
       ctx.stroke();
       // Coordinate readout
       ctx.font = '9px "JetBrains Mono", monospace';
-      ctx.fillStyle = 'rgba(34, 211, 238, 0.35)';
+      ctx.fillStyle = `rgba(${palette.blue}, 0.32)`;
       ctx.fillText(`X:${Math.round(mx)} Y:${Math.round(my)}`, mx + crossSize + 6, my - crossSize - 4);
     }
 

@@ -13,7 +13,7 @@
   <link rel="dns-prefetch" href="https://www.counter12.com" />
 
   <!-- Preload critical font -->
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Dancing+Script:wght@600&display=swap" as="style" />
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Dancing+Script:wght@600&family=JetBrains+Mono:wght@500;700&display=swap" as="style" />
   <meta name="description" content="Jingbo Wang is a research scientist working on embodied intelligence, humanoid robotics, and physics-based simulation at Shanghai AI Lab. PhD from CUHK." />
   <meta name="keywords" content="Jingbo Wang, 王靖博, embodied AI, humanoid robotics, character animation, physics simulation, sim-to-real, reinforcement learning" />
   <meta name="author" content="Jingbo Wang" />
@@ -38,6 +38,7 @@
 
 <body>
 <div class="bg-canvas" aria-hidden="true"></div>
+<div class="art-field" aria-hidden="true"></div>
 <div class="cursor-orb" aria-hidden="true"></div>
 <div class="cursor-glyph" aria-hidden="true"></div>
 
@@ -86,16 +87,36 @@
 
 <section id="about" class="reveal">
   <div class="card">
-    <h2>About</h2>
-    <p>
-      I am a research scientist at <strong>Shanghai AI Lab</strong> working on <strong>embodied intelligence, humanoid robotics, and physics-based simulation</strong>. My research focuses on generalization-oriented humanoid skill learning and sim-to-real transfer.
-      I obtained my <strong>PhD from The Chinese University of Hong Kong</strong> in 2023, advised by <strong>Prof. Dahua Lin</strong>.
-      I have also held research internships at <strong>NVIDIA (Omniverse)</strong>, <strong>SenseTime Research</strong>, <strong>Megvii Research</strong>, and <strong>Momenta</strong>.
-    </p>
-    <p>
-      My work has been published in top-tier venues including <strong>CVPR, ICCV, ECCV, SIGGRAPH, NeurIPS, and ICRA</strong>, with several oral and spotlight presentations. My publications have been cited more than <strong>10,000 times</strong>.
-      I am a recipient of the <strong>WAIC 2025 Rising Star Award</strong> and winner of the <strong>COCO 2018 Panoptic Segmentation Challenge</strong>.
-    </p>
+    <div class="about-title">
+      <span class="section-kicker">Research Signal</span>
+      <h2>About</h2>
+    </div>
+    <div class="about-body">
+      <p class="about-lede">
+        I build generalizable humanoid intelligence through physics-based simulation, embodied learning, and sim-to-real transfer.
+      </p>
+      <div class="about-copy">
+        <p>
+          I am a research scientist at <strong>Shanghai AI Lab</strong> working on <strong>embodied intelligence, humanoid robotics, and physics-based simulation</strong>. My research focuses on generalization-oriented humanoid skill learning and sim-to-real transfer.
+          I obtained my <strong>PhD from The Chinese University of Hong Kong</strong> in 2023, advised by <strong>Prof. Dahua Lin</strong>.
+        </p>
+        <p>
+          My work has been published in top-tier venues including <strong>CVPR, ICCV, ECCV, SIGGRAPH, NeurIPS, and ICRA</strong>, with several oral and spotlight presentations. My publications have been cited more than <strong>10,000 times</strong>.
+          I am a recipient of the <strong>WAIC 2025 Rising Star Award</strong> and winner of the <strong>COCO 2018 Panoptic Segmentation Challenge</strong>.
+        </p>
+      </div>
+      <div class="about-focus" aria-label="Research focus areas">
+        <span>Humanoid Robotics</span>
+        <span>Embodied AI</span>
+        <span>Physics Simulation</span>
+        <span>Sim-to-Real</span>
+      </div>
+      <div class="about-metrics" aria-label="Research highlights">
+        <div><strong>10K+</strong><span>Citations</span></div>
+        <div><strong>2025</strong><span>WAIC Rising Star</span></div>
+        <div><strong>PhD</strong><span>CUHK</span></div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -139,7 +160,7 @@
           <article class="topic-item">
             <img src="projects/humanoid_wbc/unitracker/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="UniTracker teaser" />
             <div>
-              <div class="paper-title">UniTracker: Learning Universal Whole-Body Motion Tracker for Humanoid Robots <span class="badge badge-review">Under Review</span></div>
+              <div class="paper-title">UniTracker: Learning Universal Whole-Body Motion Tracker for Humanoid Robots <span class="badge">RAL 2026</span></div>
               <div class="paper-meta">Universal Whole Body Controller with Kinematics Motion Priors</div>
               <div class="links">
                 <a href="https://arxiv.org/abs/2507.07356">PDF</a>
@@ -198,9 +219,10 @@
           <article class="topic-item">
             <img src="projects/humanoid_athleta/smash/teaser.png" class="topic-thumb" loading="lazy" decoding="async" alt="Smash teaser" />
             <div>
-              <div class="paper-title">Mastering Scalable Whole-Body Skills for Humanoid Ping-Pong with Egocentric Vision <span class="badge badge-review">Under Review</span></div>
+              <div class="paper-title">SMASH: Mastering Scalable Whole-Body Skills for Humanoid Ping-Pong with Egocentric Vision <span class="badge badge-review">Under Review</span></div>
               <div class="paper-meta">Table Tennis Skills in Egocentric Vision</div>
               <div class="links">
+                <a href="https://arxiv.org/pdf/2604.01158">PDF</a>
                 <a href="https://mmlab.hk/Smash/">Project Page</a>
               </div>
             </div>
