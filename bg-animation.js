@@ -13,7 +13,7 @@
     inset: '0',
     zIndex: '-2',
     pointerEvents: 'none',
-    opacity: '0.42'
+    opacity: '0.26'
   });
 
   const existing = document.getElementById('robotics-bg');
@@ -25,7 +25,7 @@
   const finePointer = window.matchMedia('(pointer:fine)').matches;
   const lowPower = (navigator.hardwareConcurrency || 8) <= 4;
   const mobile = Math.min(window.innerWidth, window.innerHeight) < 720;
-  const fps = lowPower || mobile ? 6 : 10;
+  const fps = lowPower || mobile ? 4 : 6;
   const frameInterval = 1000 / fps;
 
   let width = 0;
@@ -63,7 +63,7 @@
 
   function syncTheme() {
     palette = themeQuery.matches ? palettes.light : palettes.dark;
-    canvas.style.opacity = themeQuery.matches ? '0.28' : '0.42';
+    canvas.style.opacity = themeQuery.matches ? '0.18' : '0.26';
   }
 
   class Ribbon {
@@ -198,9 +198,9 @@
     }
   }
 
-  const ribbonCount = mobile || lowPower ? 1 : 2;
+  const ribbonCount = 1;
   const glyphCount = 0;
-  const sparkCount = mobile || lowPower ? 5 : 10;
+  const sparkCount = mobile || lowPower ? 3 : 6;
   const ribbons = Array.from({ length: ribbonCount }, (_, i) => new Ribbon(i));
   const glyphs = Array.from({ length: glyphCount }, (_, i) => new MotionGlyph(i));
   const sparks = Array.from({ length: sparkCount }, () => new Spark());
