@@ -1,8 +1,9 @@
-// Robotics-themed background animation
-// Features: Neural network nodes, kinematic chains, skeleton rigs, trajectories, mocap markers, animated grid
-
+// Lightweight kinetic background: motion-study ribbons, constellation points, and soft light washes.
 (function() {
   'use strict';
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (reduceMotion.matches) return;
 
   const canvas = document.createElement('canvas');
   canvas.id = 'robotics-bg';
@@ -12,864 +13,376 @@
     inset: '0',
     zIndex: '-2',
     pointerEvents: 'none',
-    opacity: '0.72'
+    opacity: '0.42'
   });
 
   const existing = document.getElementById('robotics-bg');
   if (existing) existing.remove();
   document.body.prepend(canvas);
 
-  const ctx = canvas.getContext('2d');
-  let width, height, dpr;
-  let mouse = { x: null, y: null, active: false };
-  let frameCount = 0;
+  const ctx = canvas.getContext('2d', { alpha: true });
+  const themeQuery = window.matchMedia('(prefers-color-scheme: light)');
+  const finePointer = window.matchMedia('(pointer:fine)').matches;
+  const lowPower = (navigator.hardwareConcurrency || 8) <= 4;
+  const mobile = Math.min(window.innerWidth, window.innerHeight) < 720;
+  const fps = lowPower || mobile ? 6 : 10;
+  const frameInterval = 1000 / fps;
 
-  // Configuration
-  const config = {
-    nodeCount: 42,
-    connectionDistance: 170,
-    mouseDistance: 200,
-    gridSize: 58,
-    hexagonCount: 5,
-    particleCount: 22,
-    chainCount: 3,
-    skeletonCount: 2,
-    trajectoryCount: 4,
-    mocapCount: 32,
-    ribbonCount: 5
+  let width = 0;
+  let height = 0;
+  let dpr = 1;
+  let frame = 0;
+  let lastFrame = 0;
+  let rafId = 0;
+  const pointer = { x: 0.5, y: 0.45, tx: 0.5, ty: 0.45, active: false, lastMove: 0 };
+
+  const palettes = {
+    dark: {
+      bg: '5, 11, 24',
+      blue: '128, 197, 255',
+      cyan: '112, 231, 220',
+      violet: '220, 180, 255',
+      rose: '255, 152, 202',
+      amber: '255, 210, 138',
+      white: '244, 250, 255'
+    },
+    light: {
+      bg: '246, 249, 255',
+      blue: '31, 102, 177',
+      cyan: '5, 130, 145',
+      violet: '116, 70, 180',
+      rose: '178, 58, 116',
+      amber: '154, 105, 20',
+      white: '255, 255, 255'
+    }
   };
+  let palette = themeQuery.matches ? palettes.light : palettes.dark;
 
-  // Resize handler
-  function resize() {
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
-    width = canvas.width = window.innerWidth * dpr;
-    height = canvas.height = window.innerHeight * dpr;
-    canvas.style.width = window.innerWidth + 'px';
-    canvas.style.height = window.innerHeight + 'px';
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const rand = (min, max) => Math.random() * (max - min) + min;
+  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+  function syncTheme() {
+    palette = themeQuery.matches ? palettes.light : palettes.dark;
+    canvas.style.opacity = themeQuery.matches ? '0.28' : '0.42';
   }
 
-  // Utility functions
-  const random = (min, max) => Math.random() * (max - min) + min;
-  const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
-  const lerp = (a, b, t) => a + (b - a) * t;
-  const palette = {
-    blue: '158, 203, 255',
-    cyan: '125, 211, 252',
-    violet: '216, 180, 254',
-    gold: '255, 208, 138',
-    ink: '8, 17, 32'
-  };
-
-  // Neural Network Node (representing joints/connection points)
-  class Node {
-    constructor() {
-      this.reset();
-    }
-
-    reset() {
-      this.x = random(0, window.innerWidth);
-      this.y = random(0, window.innerHeight);
-      this.vx = random(-0.25, 0.25);
-      this.vy = random(-0.25, 0.25);
-      this.radius = random(2, 4);
-      this.baseRadius = this.radius;
-      this.phase = random(0, Math.PI * 2);
-      this.pulseSpeed = random(0.02, 0.04);
-      this.type = Math.random() > 0.7 ? 'joint' : 'node';
-    }
-
-    update() {
-      this.x += this.vx;
-      this.y += this.vy;
-      this.phase += this.pulseSpeed;
-      this.radius = this.baseRadius + Math.sin(this.phase) * 1.2;
-
-      if (this.x < 0 || this.x > window.innerWidth) this.vx *= -1;
-      if (this.y < 0 || this.y > window.innerHeight) this.vy *= -1;
-
-      if (mouse.active) {
-        const d = distance(this, mouse);
-        if (d < config.mouseDistance) {
-          const force = (config.mouseDistance - d) / config.mouseDistance;
-          const angle = Math.atan2(this.y - mouse.y, this.x - mouse.x);
-          this.x += Math.cos(angle) * force * 1.5;
-          this.y += Math.sin(angle) * force * 1.5;
-        }
-      }
-    }
-
-    draw() {
-      ctx.beginPath();
-      if (this.type === 'joint') {
-        for (let i = 0; i < 6; i++) {
-          const angle = (i / 6) * Math.PI * 2 + this.phase * 0.5;
-          const r = this.radius * 1.5;
-          const x = this.x + Math.cos(angle) * r;
-          const y = this.y + Math.sin(angle) * r;
-          if (i === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-        ctx.closePath();
-        ctx.fillStyle = `rgba(${palette.violet}, ${0.24 + Math.sin(this.phase) * 0.08})`;
-        ctx.fill();
-        ctx.strokeStyle = `rgba(${palette.violet}, 0.36)`;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      } else {
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${palette.blue}, ${0.28 + Math.sin(this.phase) * 0.14})`;
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius * 2.5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${palette.blue}, ${0.06 + Math.sin(this.phase) * 0.03})`;
-        ctx.fill();
-      }
-    }
-  }
-
-  // Floating Hexagon (robot parts/modules)
-  class Hexagon {
-    constructor() {
-      this.reset();
-    }
-
-    reset() {
-      this.x = random(0, window.innerWidth);
-      this.y = random(0, window.innerHeight);
-      this.size = random(15, 40);
-      this.vx = random(-0.15, 0.15);
-      this.vy = random(-0.12, 0.12);
-      this.rotation = random(0, Math.PI * 2);
-      this.rotationSpeed = random(-0.003, 0.003);
-      this.phase = random(0, Math.PI * 2);
-      this.opacity = random(0.08, 0.2);
-    }
-
-    update() {
-      this.x += this.vx;
-      this.y += this.vy;
-      this.rotation += this.rotationSpeed;
-      this.phase += 0.015;
-
-      if (this.x < -80) this.x = window.innerWidth + 80;
-      if (this.x > window.innerWidth + 80) this.x = -80;
-      if (this.y < -80) this.y = window.innerHeight + 80;
-      if (this.y > window.innerHeight + 80) this.y = -80;
-    }
-
-    draw() {
-      ctx.save();
-      ctx.translate(this.x, this.y);
-      ctx.rotate(this.rotation);
-      const pulse = 1 + Math.sin(this.phase) * 0.08;
-      const size = this.size * pulse;
-
-      ctx.beginPath();
-      for (let i = 0; i < 6; i++) {
-        const angle = (i / 6) * Math.PI * 2;
-        const x = Math.cos(angle) * size;
-        const y = Math.sin(angle) * size;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.closePath();
-      ctx.strokeStyle = `rgba(${palette.blue}, ${this.opacity * 0.72})`;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      ctx.beginPath();
-      for (let i = 0; i < 6; i++) {
-        const angle = (i / 6) * Math.PI * 2;
-        const x = Math.cos(angle) * (size * 0.6);
-        const y = Math.sin(angle) * (size * 0.6);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.closePath();
-      ctx.strokeStyle = `rgba(${palette.gold}, ${this.opacity * 0.36})`;
-      ctx.stroke();
-      ctx.restore();
-    }
-  }
-
-  // Kinematic Chain - Simulates robot arm/limb with inverse kinematics-like motion
-  class KinematicChain {
-    constructor() {
-      this.reset();
-    }
-
-    reset() {
-      this.baseX = random(100, window.innerWidth - 100);
-      this.baseY = random(100, window.innerHeight - 100);
-      this.segments = 5;
-      this.segmentLength = random(30, 45);
-      this.joints = [];
-      this.phase = random(0, Math.PI * 2);
-      this.speed = random(0.008, 0.015);
-      this.color = Math.random() > 0.5 ? { r: 158, g: 203, b: 255 } : { r: 216, g: 180, b: 254 };
-
-      for (let i = 0; i <= this.segments; i++) {
-        this.joints.push({
-          x: this.baseX + i * this.segmentLength,
-          y: this.baseY,
-          angle: 0
-        });
-      }
-    }
-
-    update() {
-      this.phase += this.speed;
-
-      // Animate end effector in a figure-8 pattern
-      const targetX = this.baseX + Math.sin(this.phase) * 80;
-      const targetY = this.baseY + Math.sin(this.phase * 2) * 40 + Math.cos(this.phase) * 30;
-
-      // Simple FABRIK-like iteration
-      for (let iteration = 0; iteration < 5; iteration++) {
-        // Forward pass - position joints from end to base
-        this.joints[this.segments].x = targetX;
-        this.joints[this.segments].y = targetY;
-
-        for (let i = this.segments - 1; i >= 0; i--) {
-          const dx = this.joints[i].x - this.joints[i + 1].x;
-          const dy = this.joints[i].y - this.joints[i + 1].y;
-          const dist = Math.hypot(dx, dy);
-          const ratio = this.segmentLength / dist;
-
-          this.joints[i].x = this.joints[i + 1].x + dx * ratio;
-          this.joints[i].y = this.joints[i + 1].y + dy * ratio;
-        }
-
-        // Backward pass - anchor base
-        this.joints[0].x = this.baseX;
-        this.joints[0].y = this.baseY;
-
-        for (let i = 1; i <= this.segments; i++) {
-          const dx = this.joints[i].x - this.joints[i - 1].x;
-          const dy = this.joints[i].y - this.joints[i - 1].y;
-          const dist = Math.hypot(dx, dy);
-          const ratio = this.segmentLength / dist;
-
-          this.joints[i].x = this.joints[i - 1].x + dx * ratio;
-          this.joints[i].y = this.joints[i - 1].y + dy * ratio;
-        }
-      }
-    }
-
-    draw() {
-      // Draw bone segments
-      ctx.beginPath();
-      ctx.moveTo(this.joints[0].x, this.joints[0].y);
-      for (let i = 1; i <= this.segments; i++) {
-        ctx.lineTo(this.joints[i].x, this.joints[i].y);
-      }
-      ctx.strokeStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, 0.4)`;
-      ctx.lineWidth = 2;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.stroke();
-
-      // Draw joints
-      this.joints.forEach((joint, i) => {
-        const size = i === this.segments ? 5 : 3;
-        ctx.beginPath();
-        ctx.arc(joint.x, joint.y, size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${i === this.segments ? 0.9 : 0.6})`;
-        ctx.fill();
-
-        // Joint ring
-        ctx.beginPath();
-        ctx.arc(joint.x, joint.y, size * 2, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, 0.25)`;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      });
-    }
-  }
-
-  // Skeleton Rig - Simple character skeleton animation
-  class SkeletonRig {
-    constructor() {
-      this.reset();
-    }
-
-    reset() {
-      this.x = random(150, window.innerWidth - 150);
-      this.y = random(150, window.innerHeight - 150);
-      this.scale = random(0.6, 1);
-      this.phase = random(0, Math.PI * 2);
-      this.speed = random(0.01, 0.02);
-      this.pose = 'idle'; // idle, walk, run
-    }
-
-    update() {
-      this.phase += this.speed;
-    }
-
-    draw() {
-      ctx.save();
-      ctx.translate(this.x, this.y);
-      ctx.scale(this.scale, this.scale);
-
-      const time = this.phase;
-      const breathe = Math.sin(time * 2) * 3;
-
-      // Hip position (center)
-      const hipX = 0;
-      const hipY = 20 + breathe * 0.5;
-
-      // Spine
-      const spineTopX = hipX + Math.sin(time) * 5;
-      const spineTopY = hipY - 50 + Math.sin(time * 2) * 2;
-
-      // Head
-      const headX = spineTopX + Math.sin(time * 0.5) * 8;
-      const headY = spineTopY - 35;
-
-      // Arms (swinging motion)
-      const leftArmAngle = Math.sin(time * 1.5) * 0.4;
-      const rightArmAngle = Math.sin(time * 1.5 + Math.PI) * 0.4;
-
-      // Legs (walking motion)
-      const leftLegAngle = Math.sin(time * 2) * 0.3;
-      const rightLegAngle = Math.sin(time * 2 + Math.PI) * 0.3;
-
-      // Draw spine
-      ctx.beginPath();
-      ctx.moveTo(hipX, hipY);
-      ctx.quadraticCurveTo(hipX + Math.sin(time) * 3, hipY - 25, spineTopX, spineTopY);
-      ctx.strokeStyle = `rgba(${palette.violet}, 0.34)`;
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
-      // Draw head
-      ctx.beginPath();
-      ctx.arc(headX, headY, 12, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(${palette.violet}, 0.38)`;
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // Head tracking dot
-      ctx.beginPath();
-      ctx.arc(headX + 3, headY - 2, 2, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${palette.violet}, 0.5)`;
-      ctx.fill();
-
-      // Draw arms
-      this.drawLimb(spineTopX - 8, spineTopY + 5, leftArmAngle, 35, `rgba(${palette.blue}, 0.34)`);
-      this.drawLimb(spineTopX + 8, spineTopY + 5, rightArmAngle, 35, `rgba(${palette.blue}, 0.34)`);
-
-      // Draw legs
-      this.drawLimb(hipX - 8, hipY, leftLegAngle, 40, `rgba(${palette.gold}, 0.28)`);
-      this.drawLimb(hipX + 8, hipY, rightLegAngle, 40, `rgba(${palette.gold}, 0.28)`);
-
-      // Joint markers
-      const joints = [
-        { x: hipX, y: hipY },
-        { x: spineTopX, y: spineTopY },
-        { x: headX, y: headY + 12 }
-      ];
-
-      joints.forEach(j => {
-        ctx.beginPath();
-        ctx.arc(j.x, j.y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-        ctx.fill();
-      });
-
-      ctx.restore();
-    }
-
-    drawLimb(startX, startY, angle, length, color) {
-      const endX = startX + Math.sin(angle) * length;
-      const endY = startY + Math.cos(angle) * length;
-
-      ctx.beginPath();
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(endX, endY);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // Joint at end
-      ctx.beginPath();
-      ctx.arc(endX, endY, 2.5, 0, Math.PI * 2);
-      ctx.fillStyle = color;
-      ctx.fill();
-    }
-  }
-
-  // Trajectory Arc - Shows motion planning paths
-  class TrajectoryArc {
-    constructor() {
-      this.reset();
-    }
-
-    reset() {
-      this.startX = random(50, window.innerWidth - 50);
-      this.startY = random(window.innerHeight * 0.6, window.innerHeight - 50);
-      this.endX = this.startX + random(-150, 150);
-      this.endY = this.startY - random(80, 200);
-      this.height = random(60, 150);
-      this.phase = random(0, Math.PI * 2);
-      this.speed = random(0.01, 0.02);
-      this.color = Math.random() > 0.5 ? palette.blue : palette.gold;
-      this.duration = random(120, 180);
-      this.progress = 0;
-    }
-
-    update() {
-      this.phase += this.speed;
-      this.progress += 1;
-
-      if (this.progress > this.duration) {
-        this.reset();
-      }
-    }
-
-    draw() {
-      const t = this.progress / this.duration;
-      const fadeIn = Math.min(t * 5, 1);
-      const fadeOut = Math.min((1 - t) * 3, 1);
-      const alpha = Math.min(fadeIn, fadeOut) * 0.4;
-
-      // Draw parabolic trajectory
-      ctx.beginPath();
-      const steps = 30;
-      for (let i = 0; i <= steps; i++) {
-        const pt = i / steps;
-        const x = this.startX + (this.endX - this.startX) * pt;
-        const y = this.startY + (this.endY - this.startY) * pt - Math.sin(pt * Math.PI) * this.height;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.strokeStyle = `rgba(${this.color}, ${alpha})`;
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([5, 5]);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      // Current position marker
-      if (t < 1) {
-        const cx = this.startX + (this.endX - this.startX) * t;
-        const cy = this.startY + (this.endY - this.startY) * t - Math.sin(t * Math.PI) * this.height;
-
-        ctx.beginPath();
-        ctx.arc(cx, cy, 4, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${this.color}, ${alpha * 1.5})`;
-        ctx.fill();
-
-        // Target marker
-        ctx.beginPath();
-        ctx.arc(this.endX, this.endY, 3, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(${this.color}, ${alpha * 0.6})`;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
-    }
-  }
-
-  // Motion Capture Markers - Floating dots that form patterns
-  class MocapMarker {
-    constructor() {
-      this.reset();
-    }
-
-    reset() {
-      this.x = random(0, window.innerWidth);
-      this.y = random(0, window.innerHeight);
-      this.baseX = this.x;
-      this.baseY = this.y;
-      this.vx = random(-0.3, 0.3);
-      this.vy = random(-0.3, 0.3);
-      this.size = random(2, 4);
-      this.phase = random(0, Math.PI * 2);
-      this.speed = random(0.02, 0.04);
-      this.pattern = Math.floor(random(0, 3)); // 0: orbit, 1: figure8, 2: random
-      this.trail = [];
-      this.maxTrail = 8;
-    }
-
-    update() {
-      this.phase += this.speed;
-
-      // Store trail
-      this.trail.push({ x: this.x, y: this.y });
-      if (this.trail.length > this.maxTrail) this.trail.shift();
-
-      // Different movement patterns
-      switch (this.pattern) {
-        case 0: // Orbit
-          this.x = this.baseX + Math.cos(this.phase) * 30;
-          this.y = this.baseY + Math.sin(this.phase) * 20;
-          break;
-        case 1: // Figure 8
-          this.x = this.baseX + Math.sin(this.phase) * 40;
-          this.y = this.baseY + Math.sin(this.phase * 2) * 20;
-          break;
-        default: // Random drift
-          this.x += this.vx;
-          this.y += this.vy;
-          if (Math.abs(this.x - this.baseX) > 50) this.vx *= -1;
-          if (Math.abs(this.y - this.baseY) > 50) this.vy *= -1;
-      }
-    }
-
-    draw() {
-      // Draw trail
-      if (this.trail.length > 1) {
-        ctx.beginPath();
-        ctx.moveTo(this.trail[0].x, this.trail[0].y);
-        for (let i = 1; i < this.trail.length; i++) {
-          ctx.lineTo(this.trail[i].x, this.trail[i].y);
-        }
-        ctx.strokeStyle = `rgba(${palette.violet}, 0.1)`;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
-
-      // Draw marker
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${palette.violet}, ${0.32 + Math.sin(this.phase * 2) * 0.12})`;
-      ctx.fill();
-
-      // Cross marker (typical mocap style)
-      ctx.beginPath();
-      ctx.moveTo(this.x - this.size * 1.5, this.y);
-      ctx.lineTo(this.x + this.size * 1.5, this.y);
-      ctx.moveTo(this.x, this.y - this.size * 1.5);
-      ctx.lineTo(this.x, this.y + this.size * 1.5);
-      ctx.strokeStyle = `rgba(${palette.violet}, ${0.18})`;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    }
-  }
-
-  // Motion Particle (animation curves/motion trails)
-  class MotionParticle {
-    constructor() {
-      this.reset();
-    }
-
-    reset() {
-      this.x = random(0, window.innerWidth);
-      this.y = random(0, window.innerHeight);
-      this.vx = random(-0.8, 0.8);
-      this.vy = random(-0.4, 0.4);
-      this.life = 1;
-      this.decay = random(0.004, 0.012);
-      this.size = random(1, 2.5);
-      this.trail = [];
-      this.maxTrail = 12;
-      this.color = Math.random() > 0.5 ? palette.blue : palette.violet;
-    }
-
-    update() {
-      this.trail.push({ x: this.x, y: this.y });
-      if (this.trail.length > this.maxTrail) this.trail.shift();
-
-      this.x += this.vx;
-      this.y += this.vy;
-      this.life -= this.decay;
-
-      this.vx += random(-0.03, 0.03);
-      this.vy += random(-0.03, 0.03);
-      this.vx *= 0.99;
-      this.vy *= 0.99;
-
-      if (this.life <= 0 || this.x < 0 || this.x > window.innerWidth || this.y < 0 || this.y > window.innerHeight) {
-        this.reset();
-      }
-    }
-
-    draw() {
-      if (this.trail.length < 2) return;
-
-      ctx.beginPath();
-      ctx.moveTo(this.trail[0].x, this.trail[0].y);
-      for (let i = 1; i < this.trail.length; i++) {
-        ctx.lineTo(this.trail[i].x, this.trail[i].y);
-      }
-      ctx.strokeStyle = `rgba(${this.color}, ${this.life * 0.3})`;
-      ctx.lineWidth = this.size;
-      ctx.lineCap = 'round';
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${this.color}, ${this.life * 0.6})`;
-      ctx.fill();
-    }
-  }
-
-  // Cinematic light ribbon inspired by long-exposure motion studies.
-  class LightRibbon {
+  class Ribbon {
     constructor(index) {
       this.index = index;
       this.reset();
     }
 
     reset() {
-      this.anchorY = random(window.innerHeight * 0.08, window.innerHeight * 0.92);
-      this.amplitude = random(42, 120);
-      this.wave = random(0.0025, 0.0055);
-      this.speed = random(0.004, 0.009);
-      this.phase = random(0, Math.PI * 2);
-      this.width = random(1.2, 2.8);
-      this.alpha = random(0.12, 0.24);
-      this.color = [palette.blue, palette.violet, palette.gold][this.index % 3];
-      this.tilt = random(-0.18, 0.18);
+      this.seed = rand(0, Math.PI * 2);
+      this.y = rand(0.08, 0.92);
+      this.amp = rand(0.035, 0.095);
+      this.wave = rand(0.85, 1.8);
+      this.speed = rand(0.00045, 0.0011);
+      this.tilt = rand(-0.09, 0.09);
+      this.lineWidth = rand(0.7, 1.7);
+      this.alpha = rand(0.055, 0.13);
+      this.color = [palette.blue, palette.violet, palette.cyan, palette.amber][this.index % 4];
     }
 
-    update() {
-      this.phase += this.speed;
-    }
+    draw(time) {
+      const steps = mobile ? 18 : 28;
+      const driftX = (pointer.x - 0.5) * width * 0.012;
+      const driftY = (pointer.y - 0.5) * height * 0.025;
 
-    draw() {
-      const steps = 90;
       ctx.save();
       ctx.globalCompositeOperation = 'screen';
       ctx.beginPath();
       for (let i = 0; i <= steps; i++) {
-        const p = i / steps;
-        const x = p * window.innerWidth;
-        const drift = Math.sin(this.phase + p * Math.PI * 2) * this.amplitude;
-        const detail = Math.sin(this.phase * 1.8 + p * Math.PI * 7) * this.amplitude * 0.18;
-        const y = this.anchorY + drift + detail + (p - 0.5) * window.innerWidth * this.tilt;
+        const t = i / steps;
+        const x = t * width + driftX;
+        const waveA = Math.sin(this.seed + time * this.speed + t * Math.PI * this.wave);
+        const waveB = Math.cos(this.seed * 0.7 + time * this.speed * 1.7 + t * Math.PI * 5.2);
+        const y = this.y * height + waveA * this.amp * height + waveB * this.amp * height * 0.26 + (t - 0.5) * width * this.tilt + driftY;
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
       ctx.strokeStyle = `rgba(${this.color}, ${this.alpha})`;
-      ctx.lineWidth = this.width;
+      ctx.lineWidth = this.lineWidth;
       ctx.lineCap = 'round';
-      ctx.shadowColor = `rgba(${this.color}, ${this.alpha * 1.8})`;
-      ctx.shadowBlur = 22;
       ctx.stroke();
 
-      ctx.strokeStyle = `rgba(255, 255, 255, ${this.alpha * 0.22})`;
+      ctx.strokeStyle = `rgba(${palette.white}, ${this.alpha * 0.12})`;
       ctx.lineWidth = 0.7;
-      ctx.shadowBlur = 0;
       ctx.stroke();
       ctx.restore();
     }
   }
 
-  // Animated Grid
-  function drawGrid() {
-    const time = frameCount * 0.008;
-    const offsetX = (time * 8) % config.gridSize;
-    const offsetY = (time * 4) % config.gridSize;
-
-    ctx.strokeStyle = `rgba(${palette.blue}, 0.052)`;
-    ctx.lineWidth = 1;
-
-    for (let x = offsetX; x < window.innerWidth; x += config.gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, window.innerHeight);
-      ctx.stroke();
+  class MotionGlyph {
+    constructor(index) {
+      this.index = index;
+      this.reset();
     }
 
-    for (let y = offsetY; y < window.innerHeight; y += config.gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(window.innerWidth, y);
-      ctx.stroke();
+    reset() {
+      this.cx = rand(0.12, 0.88);
+      this.cy = rand(0.14, 0.86);
+      this.radius = rand(28, 72);
+      this.phase = rand(0, Math.PI * 2);
+      this.speed = rand(0.0008, 0.002);
+      this.alpha = rand(0.055, 0.12);
+      this.color = [palette.blue, palette.rose, palette.amber][this.index % 3];
     }
 
-    ctx.fillStyle = `rgba(${palette.blue}, 0.11)`;
-    for (let x = offsetX; x < window.innerWidth; x += config.gridSize) {
-      for (let y = offsetY; y < window.innerHeight; y += config.gridSize) {
-        const dist = Math.hypot(x - mouse.x, y - mouse.y);
-        const size = mouse.active && dist < 150 ? 2.5 + (150 - dist) / 60 : 1;
+    draw(time) {
+      const cx = this.cx * width + (pointer.x - 0.5) * 10;
+      const cy = this.cy * height + (pointer.y - 0.5) * 8;
+      const phase = this.phase + time * this.speed;
+      const points = 7;
+
+      ctx.save();
+      ctx.globalCompositeOperation = 'screen';
+      ctx.strokeStyle = `rgba(${this.color}, ${this.alpha})`;
+      ctx.fillStyle = `rgba(${this.color}, ${this.alpha * 1.65})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let i = 0; i < points; i++) {
+        const a = phase + i * Math.PI * 0.74;
+        const r = this.radius * (0.62 + Math.sin(phase * 0.8 + i) * 0.2);
+        const x = cx + Math.cos(a) * r;
+        const y = cy + Math.sin(a * 1.24) * r * 0.58;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      for (let i = 0; i < points; i++) {
+        const a = phase + i * Math.PI * 0.74;
+        const r = this.radius * (0.62 + Math.sin(phase * 0.8 + i) * 0.2);
+        const x = cx + Math.cos(a) * r;
+        const y = cy + Math.sin(a * 1.24) * r * 0.58;
         ctx.beginPath();
-        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.arc(x, y, i % 3 === 0 ? 2.2 : 1.35, 0, Math.PI * 2);
         ctx.fill();
       }
+      ctx.restore();
     }
   }
 
-  function drawAtmosphere() {
-    const time = frameCount * 0.006;
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+  class Spark {
+    constructor() {
+      this.reset();
+    }
 
+    reset() {
+      this.x = rand(0, width || window.innerWidth);
+      this.y = rand(0, height || window.innerHeight);
+      this.vx = rand(-0.045, 0.045);
+      this.vy = rand(-0.035, 0.035);
+      this.size = rand(0.55, 1.45);
+      this.phase = rand(0, Math.PI * 2);
+      this.color = Math.random() > 0.5 ? palette.blue : palette.cyan;
+    }
+
+    update() {
+      this.phase += 0.008;
+      this.x += this.vx + (pointer.x - 0.5) * 0.015;
+      this.y += this.vy + (pointer.y - 0.5) * 0.01;
+      if (this.x < -20) this.x = width + 20;
+      if (this.x > width + 20) this.x = -20;
+      if (this.y < -20) this.y = height + 20;
+      if (this.y > height + 20) this.y = -20;
+    }
+
+    draw() {
+      const alpha = 0.055 + Math.sin(this.phase) * 0.025;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${this.color}, ${alpha})`;
+      ctx.fill();
+    }
+  }
+
+  const ribbonCount = mobile || lowPower ? 1 : 2;
+  const glyphCount = 0;
+  const sparkCount = mobile || lowPower ? 5 : 10;
+  const ribbons = Array.from({ length: ribbonCount }, (_, i) => new Ribbon(i));
+  const glyphs = Array.from({ length: glyphCount }, (_, i) => new MotionGlyph(i));
+  const sparks = Array.from({ length: sparkCount }, () => new Spark());
+  const prismRings = [
+    { x: 0.78, y: 0.22, r: 210, color: 'violet', phase: 0.2 },
+    { x: 0.2, y: 0.76, r: 170, color: 'cyan', phase: 2.4 },
+    { x: 0.55, y: 0.58, r: 260, color: 'amber', phase: 4.1 }
+  ];
+  const terrainSeeds = Array.from({ length: mobile || lowPower ? 2 : 3 }, (_, index) => ({
+    y: 0.58 + index * 0.09,
+    amp: 20 + index * 18,
+    speed: 0.00008 + index * 0.000035,
+    alpha: 0.11 - index * 0.018
+  }));
+  const probeDots = Array.from({ length: mobile || lowPower ? 10 : 18 }, () => ({
+    x: rand(0.08, 0.92),
+    y: rand(0.34, 0.9),
+    pulse: rand(0, Math.PI * 2),
+    size: rand(0.8, 2.2)
+  }));
+
+  function resize() {
+    dpr = 1;
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function drawFineGrid(time) {
+    const gap = mobile ? 92 : 76;
+    const offset = (time * 0.0012) % gap;
+    ctx.save();
+    ctx.strokeStyle = `rgba(${palette.blue}, ${themeQuery.matches ? 0.018 : 0.028})`;
+    ctx.lineWidth = 1;
+    for (let x = -gap + offset; x < width + gap; x += gap) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x + height * 0.18, height);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawExplorerWorld(time) {
+    const slow = time * 0.00022;
     ctx.save();
     ctx.globalCompositeOperation = 'screen';
 
-    const scanY = (Math.sin(time * 0.45) * 0.5 + 0.5) * h;
-    const scan = ctx.createLinearGradient(0, scanY - 80, 0, scanY + 80);
-    scan.addColorStop(0, 'rgba(158, 203, 255, 0)');
-    scan.addColorStop(0.5, 'rgba(158, 203, 255, 0.055)');
-    scan.addColorStop(1, 'rgba(158, 203, 255, 0)');
-    ctx.fillStyle = scan;
-    ctx.fillRect(0, scanY - 80, w, 160);
+    terrainSeeds.forEach((layer, layerIndex) => {
+      const baseY = height * layer.y;
+      const steps = mobile || lowPower ? 18 : 28;
+      ctx.beginPath();
+      for (let i = 0; i <= steps; i++) {
+        const p = i / steps;
+        const x = p * width;
+        const y = baseY
+          + Math.sin(p * Math.PI * (2.2 + layerIndex * 0.7) + slow * (1 + layerIndex)) * layer.amp
+          + Math.sin(p * Math.PI * 7.5 - slow * 2.1) * layer.amp * 0.22;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = `rgba(${palette.blue}, ${layer.alpha})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
 
-    const halo = ctx.createRadialGradient(w * 0.68, h * 0.28, 0, w * 0.68, h * 0.28, Math.max(w, h) * 0.62);
-    halo.addColorStop(0, 'rgba(216, 180, 254, 0.075)');
-    halo.addColorStop(0.45, 'rgba(158, 203, 255, 0.04)');
-    halo.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = halo;
-    ctx.fillRect(0, 0, w, h);
+    const roverX = width * (0.28 + Math.sin(slow * 1.7) * 0.025);
+    const roverY = height * 0.69 + Math.sin(slow * 2.2) * 8;
+    const scanAngle = -0.34 + Math.sin(slow * 3.2) * 0.24;
+    const scanLength = Math.min(width, height) * (mobile ? 0.58 : 0.74);
+
+    ctx.fillStyle = `rgba(${palette.cyan}, ${mobile || lowPower ? 0.035 : 0.052})`;
+    ctx.beginPath();
+    ctx.moveTo(roverX, roverY);
+    ctx.arc(roverX, roverY, scanLength, scanAngle - 0.2, scanAngle + 0.2);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.strokeStyle = `rgba(${palette.cyan}, 0.2)`;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([5, 12]);
+    ctx.beginPath();
+    ctx.arc(roverX, roverY, scanLength * 0.42, scanAngle - 0.22, scanAngle + 0.22);
+    ctx.arc(roverX, roverY, scanLength * 0.68, scanAngle - 0.2, scanAngle + 0.2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    probeDots.forEach((dot) => {
+      const dx = dot.x * width - roverX;
+      const dy = dot.y * height - roverY;
+      const angle = Math.atan2(dy, dx);
+      const seen = dx * dx + dy * dy < scanLength * scanLength && Math.abs(angle - scanAngle) < 0.24;
+      const pulse = Math.sin(slow * 14 + dot.pulse) * 0.5 + 0.5;
+      ctx.beginPath();
+      ctx.arc(dot.x * width, dot.y * height, dot.size + (seen ? pulse * 1.8 : 0), 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${seen ? palette.amber : palette.blue}, ${seen ? 0.22 + pulse * 0.2 : 0.055})`;
+      ctx.fill();
+    });
+
+    ctx.strokeStyle = `rgba(${palette.amber}, 0.18)`;
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(roverX - 76, roverY + 38);
+    ctx.bezierCurveTo(roverX - 26, roverY + 24, roverX + 22, roverY + 42, roverX + 86, roverY + 22);
+    ctx.stroke();
+
+    ctx.fillStyle = `rgba(${palette.white}, 0.18)`;
+    ctx.strokeStyle = `rgba(${palette.amber}, 0.3)`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(roverX - 18, roverY - 10, 36, 18, 4);
+    ctx.fill();
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(roverX + 4, roverY - 10);
+    ctx.lineTo(roverX + 18, roverY - 30);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(roverX + 20, roverY - 32, 3, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${palette.cyan}, 0.55)`;
+    ctx.fill();
 
     ctx.restore();
   }
 
-  // Initialize entities
-  const nodes = Array.from({ length: config.nodeCount }, () => new Node());
-  const hexagons = Array.from({ length: config.hexagonCount }, () => new Hexagon());
-  const chains = Array.from({ length: config.chainCount }, () => new KinematicChain());
-  const skeletons = Array.from({ length: config.skeletonCount }, () => new SkeletonRig());
-  const trajectories = Array.from({ length: config.trajectoryCount }, () => new TrajectoryArc());
-  const mocapMarkers = Array.from({ length: config.mocapCount }, () => new MocapMarker());
-  const particles = Array.from({ length: config.particleCount }, () => new MotionParticle());
-  const ribbons = Array.from({ length: config.ribbonCount }, (_, index) => new LightRibbon(index));
+  function animate(timestamp) {
+    rafId = requestAnimationFrame(animate);
+    if (document.hidden || timestamp - lastFrame < frameInterval) return;
+    lastFrame = timestamp;
+    frame += 1;
 
-  // Draw connections between nodes
-  function drawConnections() {
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const d = distance(nodes[i], nodes[j]);
-        if (d < config.connectionDistance) {
-          const alpha = (1 - d / config.connectionDistance) * 0.35;
-          ctx.beginPath();
-          ctx.moveTo(nodes[i].x, nodes[i].y);
-          ctx.lineTo(nodes[j].x, nodes[j].y);
-          ctx.strokeStyle = `rgba(${palette.blue}, ${alpha * 0.65})`;
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
-      }
+    pointer.x += (pointer.tx - pointer.x) * 0.025;
+    pointer.y += (pointer.ty - pointer.y) * 0.025;
+    if (pointer.active && timestamp - pointer.lastMove > 1200) pointer.active = false;
 
-      if (mouse.active) {
-        const d = distance(nodes[i], mouse);
-        if (d < config.mouseDistance) {
-          const alpha = (1 - d / config.mouseDistance) * 0.5;
-          ctx.beginPath();
-          ctx.moveTo(nodes[i].x, nodes[i].y);
-          ctx.lineTo(mouse.x, mouse.y);
-          ctx.strokeStyle = `rgba(${palette.gold}, ${alpha * 0.8})`;
-          ctx.lineWidth = 1.2;
-          ctx.stroke();
-        }
-      }
-    }
-  }
+    ctx.clearRect(0, 0, width, height);
+    if (!mobile && !lowPower) drawFineGrid(timestamp);
+    drawExplorerWorld(timestamp);
 
-  // Animation loop
-  function animate() {
-    frameCount++;
-    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-
-    // Draw layers from back to front
-    drawAtmosphere();
-    drawGrid();
-
-    ribbons.forEach(r => {
-      r.update();
-      r.draw();
+    ribbons.forEach((ribbon) => ribbon.draw(timestamp));
+    sparks.forEach((spark) => {
+      spark.update();
+      spark.draw();
     });
 
-    hexagons.forEach(h => {
-      h.update();
-      h.draw();
-    });
-
-    trajectories.forEach(t => {
-      t.update();
-      t.draw();
-    });
-
-    chains.forEach(c => {
-      c.update();
-      c.draw();
-    });
-
-    skeletons.forEach(s => {
-      s.update();
-      s.draw();
-    });
-
-    mocapMarkers.forEach(m => {
-      m.update();
-      m.draw();
-    });
-
-    drawConnections();
-
-    nodes.forEach(n => {
-      n.update();
-      n.draw();
-    });
-
-    particles.forEach(p => {
-      p.update();
-      p.draw();
-    });
-
-    // HUD crosshair & coordinate readout near mouse
-    if (mouse.active && mouse.x !== null) {
-      const mx = mouse.x, my = mouse.y;
-      const crossSize = 12;
-      const gap = 4;
-      ctx.strokeStyle = `rgba(${palette.blue}, 0.25)`;
+    if (finePointer && pointer.active) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'screen';
+      const x = pointer.x * width;
+      const y = pointer.y * height;
+      ctx.strokeStyle = `rgba(${palette.amber}, 0.12)`;
       ctx.lineWidth = 1;
-      // Crosshair lines with gap
       ctx.beginPath();
-      ctx.moveTo(mx - crossSize, my); ctx.lineTo(mx - gap, my);
-      ctx.moveTo(mx + gap, my); ctx.lineTo(mx + crossSize, my);
-      ctx.moveTo(mx, my - crossSize); ctx.lineTo(mx, my - gap);
-      ctx.moveTo(mx, my + gap); ctx.lineTo(mx, my + crossSize);
+      ctx.arc(x, y, 22 + Math.sin(frame * 0.025) * 3, 0, Math.PI * 2);
       ctx.stroke();
-      // Corner brackets
-      const bSize = 8;
-      ctx.strokeStyle = `rgba(${palette.violet}, 0.22)`;
-      ctx.beginPath();
-      ctx.moveTo(mx - crossSize - 2, my - crossSize + bSize); ctx.lineTo(mx - crossSize - 2, my - crossSize - 2); ctx.lineTo(mx - crossSize + bSize, my - crossSize - 2);
-      ctx.moveTo(mx + crossSize - bSize, my - crossSize - 2); ctx.lineTo(mx + crossSize + 2, my - crossSize - 2); ctx.lineTo(mx + crossSize + 2, my - crossSize + bSize);
-      ctx.moveTo(mx + crossSize + 2, my + crossSize - bSize); ctx.lineTo(mx + crossSize + 2, my + crossSize + 2); ctx.lineTo(mx + crossSize - bSize, my + crossSize + 2);
-      ctx.moveTo(mx - crossSize + bSize, my + crossSize + 2); ctx.lineTo(mx - crossSize - 2, my + crossSize + 2); ctx.lineTo(mx - crossSize - 2, my + crossSize - bSize);
-      ctx.stroke();
-      // Coordinate readout
-      ctx.font = '9px "JetBrains Mono", monospace';
-      ctx.fillStyle = `rgba(${palette.blue}, 0.32)`;
-      ctx.fillText(`X:${Math.round(mx)} Y:${Math.round(my)}`, mx + crossSize + 6, my - crossSize - 4);
+      ctx.restore();
     }
-
-    requestAnimationFrame(animate);
   }
 
-  // Event listeners
+  function handlePointer(event) {
+    pointer.tx = event.clientX / window.innerWidth;
+    pointer.ty = event.clientY / window.innerHeight;
+    pointer.active = true;
+    pointer.lastMove = performance.now();
+  }
+
   window.addEventListener('resize', resize, { passive: true });
-
-  document.addEventListener('mousemove', (e) => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-    mouse.active = true;
-
-    clearTimeout(mouse.timer);
-    mouse.timer = setTimeout(() => {
-      mouse.active = false;
-    }, 100);
-  }, { passive: true });
-
-  // Visibility check
+  if (finePointer) document.addEventListener('pointermove', handlePointer, { passive: true });
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-      // Pause when hidden
-    }
+    if (!document.hidden) lastFrame = 0;
   });
-
-  // Reduced motion check
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  if (prefersReducedMotion.matches) {
-    canvas.style.display = 'none';
-    return;
+  if (typeof themeQuery.addEventListener === 'function') {
+    themeQuery.addEventListener('change', syncTheme);
+  } else if (typeof themeQuery.addListener === 'function') {
+    themeQuery.addListener(syncTheme);
   }
 
-  // Initialize
+  syncTheme();
   resize();
-  animate();
+  rafId = requestAnimationFrame(animate);
 })();

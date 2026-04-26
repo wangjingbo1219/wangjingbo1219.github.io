@@ -57,7 +57,7 @@
   };
 
   const initTrails = () => {
-    const count = 9;
+    const count = 3;
     trails = Array.from({ length: count }, (_, index) => {
       const dot = document.createElement('span');
       dot.className = 'cursor-trail';
@@ -121,7 +121,7 @@
 
   // Frame rate throttling for performance
   let lastFrameTime = 0;
-  const targetFrameInterval = isLowPowerDevice ? 33 : 16; // 30fps for low power, 60fps otherwise
+  const targetFrameInterval = 33;
 
   const render = (timestamp) => {
     // Throttle frame rate
@@ -213,18 +213,20 @@
     { primary: 'rgba(248,113,113,0.95)', secondary: 'rgba(99,102,241,0.92)', halo: 'rgba(255,255,255,0.88)' }
   ];
 
-  document.addEventListener('pointerdown', (event) => {
-    const burst = document.createElement('span');
-    burst.className = 'click-burst';
-    burst.style.left = event.clientX + 'px';
-    burst.style.top = event.clientY + 'px';
-    const palette = clickPalettes[Math.floor(Math.random() * clickPalettes.length)];
-    burst.style.setProperty('--burst-color', palette.primary);
-    burst.style.setProperty('--burst-color-alt', palette.secondary);
-    burst.style.setProperty('--burst-halo', palette.halo);
-    document.body.appendChild(burst);
-    burst.addEventListener('animationend', () => burst.remove());
-  });
+  if (pointerMedia.matches && !motionMedia.matches && !isLowPowerDevice) {
+    document.addEventListener('pointerdown', (event) => {
+      const burst = document.createElement('span');
+      burst.className = 'click-burst';
+      burst.style.left = event.clientX + 'px';
+      burst.style.top = event.clientY + 'px';
+      const palette = clickPalettes[Math.floor(Math.random() * clickPalettes.length)];
+      burst.style.setProperty('--burst-color', palette.primary);
+      burst.style.setProperty('--burst-color-alt', palette.secondary);
+      burst.style.setProperty('--burst-halo', palette.halo);
+      document.body.appendChild(burst);
+      burst.addEventListener('animationend', () => burst.remove());
+    }, { passive: true });
+  }
 
   // --- HUD status typing effect ---
   const hudStatus = document.querySelector('.hud-status');
