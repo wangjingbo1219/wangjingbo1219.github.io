@@ -24,8 +24,10 @@
   const themeQuery = window.matchMedia('(prefers-color-scheme: light)');
   const finePointer = window.matchMedia('(pointer:fine)').matches;
   const lowPower = (navigator.hardwareConcurrency || 8) <= 4;
+  const deviceMemory = navigator.deviceMemory || 4;
   const mobile = Math.min(window.innerWidth, window.innerHeight) < 720;
-  const fps = lowPower || mobile ? 4 : 6;
+  const shouldAnimate = finePointer && !lowPower && !mobile && deviceMemory >= 8;
+  const fps = 3;
   const frameInterval = 1000 / fps;
 
   let width = 0;
@@ -371,8 +373,18 @@
     pointer.lastMove = performance.now();
   }
 
-  window.addEventListener('resize', resize, { passive: true });
-  if (finePointer) document.addEventListener('pointermove', handlePointer, { passive: true });
+  function drawStatic() {
+    ctx.clearRect(0, 0, width, height);
+    drawExplorerWorld(0);
+    ribbons.forEach((ribbon) => ribbon.draw(0));
+    sparks.forEach((spark) => spark.draw());
+  }
+
+  window.addEventListener('resize', () => {
+    resize();
+    if (!shouldAnimate) drawStatic();
+  }, { passive: true });
+  if (shouldAnimate) document.addEventListener('pointermove', handlePointer, { passive: true });
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) lastFrame = 0;
   });
@@ -384,5 +396,9 @@
 
   syncTheme();
   resize();
-  rafId = requestAnimationFrame(animate);
+  if (shouldAnimate) {
+    rafId = requestAnimationFrame(animate);
+  } else {
+    drawStatic();
+  }
 })();

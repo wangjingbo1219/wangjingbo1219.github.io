@@ -3,11 +3,7 @@
   const cursorOrb = document.querySelector('.cursor-orb');
   const cursorGlyph = document.querySelector('.cursor-glyph');
   const parallaxLayers = Array.from(document.querySelectorAll('.bg-layer[data-depth]'));
-  const pointerMedia = window.matchMedia('(pointer:fine)');
-  const motionMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const isTouchDevice = window.matchMedia('(hover: none)').matches || 'ontouchstart' in window;
-  const isLowPowerDevice = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
-  const enableCursorFx = cursorOrb && cursorGlyph && pointerMedia.matches && !motionMedia.matches && !isTouchDevice && !isLowPowerDevice;
+  const enableCursorFx = false;
   const INTERACTIVE_SELECTOR = 'a[href], button, [role="button"], [tabindex]:not([tabindex="-1"])';
   const state = {
     x: window.innerWidth / 2,
@@ -57,7 +53,7 @@
   };
 
   const initTrails = () => {
-    const count = 3;
+    const count = 1;
     trails = Array.from({ length: count }, (_, index) => {
       const dot = document.createElement('span');
       dot.className = 'cursor-trail';
@@ -213,7 +209,7 @@
     { primary: 'rgba(248,113,113,0.95)', secondary: 'rgba(99,102,241,0.92)', halo: 'rgba(255,255,255,0.88)' }
   ];
 
-  if (pointerMedia.matches && !motionMedia.matches && !isLowPowerDevice) {
+  if (enableCursorFx) {
     document.addEventListener('pointerdown', (event) => {
       const burst = document.createElement('span');
       burst.className = 'click-burst';
