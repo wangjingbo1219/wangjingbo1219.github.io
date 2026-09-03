@@ -227,7 +227,7 @@
   // --- HUD status typing effect ---
   const hudStatus = document.querySelector('.hud-status');
   if (hudStatus) {
-    const hudText = 'SYSTEM ONLINE \u00b7 RESEARCH ACTIVE \u00b7 NODE: SHANGHAI';
+    const hudText = 'SYSTEM ONLINE · RESEARCH ACTIVE · NODE: BEIJING · GALBOT';
     let hudIndex = 0;
     const cursor = document.createElement('span');
     cursor.className = 'hud-cursor';
@@ -280,5 +280,24 @@
     }, { rootMargin: '0px 0px -60px 0px', threshold: 0.05 });
 
     revealSections.forEach((section) => revealObserver.observe(section));
+  }
+
+  // --- Scroll progress bar ---
+  const scrollProgress = document.querySelector('.scroll-progress');
+  if (scrollProgress) {
+    let progressTicking = false;
+    const updateProgress = () => {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      const ratio = scrollable > 0 ? Math.min(window.scrollY / scrollable, 1) : 0;
+      scrollProgress.style.transform = `scaleX(${ratio})`;
+      progressTicking = false;
+    };
+    window.addEventListener('scroll', () => {
+      if (!progressTicking) {
+        progressTicking = true;
+        requestAnimationFrame(updateProgress);
+      }
+    }, { passive: true });
+    updateProgress();
   }
 })();
