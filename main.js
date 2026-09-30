@@ -227,7 +227,7 @@
   // --- HUD status typing effect ---
   const hudStatus = document.querySelector('.hud-status');
   if (hudStatus) {
-    const hudText = 'SYSTEM ONLINE · RESEARCH ACTIVE · NODE: BEIJING · GALBOT';
+    const hudText = 'SYSTEM ONLINE · RESEARCH ACTIVE · NVIDIA GEAR LAB';
     let hudIndex = 0;
     const cursor = document.createElement('span');
     cursor.className = 'hud-cursor';
