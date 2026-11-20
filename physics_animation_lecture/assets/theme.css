@@ -1,0 +1,403 @@
+/* Dark, video-first theme — follows the look of the GRAIL CoRL 2026 oral deck (NVIDIA green on black, 1920x1080 stage). */
+:root { --g: #76B900; --g-br: #8fd400; --g-dk: #5a8f00; --ink: #fff; --mid: #b8b8b8; --mute: #7d7d7d; --line: #2a2a2a; --soft: #101010; --amber: #f5b301; }
+.slide { background: #000; color: var(--ink); }
+.fx { transform: none; transition: opacity .5s ease; }
+b, strong { font-weight: 700; }
+.g { color: var(--g); }
+
+/* viewer chrome */
+.mode-main .deck { top: calc(50% - 32px); }
+:fullscreen .deck, .mode-main:fullscreen .deck { top: 50%; }
+.deck-counter { display: none; }
+.deck-controls { position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%); z-index: 100; display: flex; align-items: center; gap: 4px;
+  padding: 4px 8px; color: #f3f5ef; background: #181c18; border: 1px solid #394334; border-radius: 6px; }
+.deck-controls button { width: 40px; height: 40px; border: 0; border-radius: 4px; background: transparent; color: inherit; font: 500 17px 'NVIDIA Sans', Arial; cursor: pointer; }
+.deck-controls button:hover { color: #a8dc2f; background: #2a3325; }
+.deck-controls .pos { width: 64px; text-align: center; font: 500 13px 'NVIDIA Sans', Arial; color: #dfead6; font-variant-numeric: tabular-nums; }
+:fullscreen .deck-controls, .mode-print .deck-controls, .mode-print .deck-notes { display: none; }
+.deck-notes { position: fixed; left: 50%; bottom: 70px; transform: translateX(-50%); width: min(1100px, 92vw); max-height: 38vh; overflow: auto; z-index: 98; display: none;
+  background: rgba(14,16,14,.96); border: 1px solid #394334; border-top: 3px solid var(--g); border-radius: 8px; padding: 14px 20px 16px; color: #e9eee4;
+  font: 400 17px/1.55 'NVIDIA Sans', 'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif; }
+:fullscreen .deck-notes { bottom: 16px; }
+.deck-show-notes .deck-notes { display: block; }
+.deck-notes .nh { display: flex; justify-content: space-between; font: 700 13px 'NVIDIA Sans', Arial; letter-spacing: .08em; text-transform: uppercase; color: var(--g); margin-bottom: 6px; }
+.deck-notes .tm { color: #fff; font-variant-numeric: tabular-nums; }
+.deck-notes p { margin: 0 0 6px; }
+aside.notes { display: none; }
+
+/* header */
+.hd { position: absolute; left: 90px; right: 90px; top: 54px; }
+.kicker { font: 700 22px/1 'NVIDIA Sans', Arial; letter-spacing: .16em; text-transform: uppercase; color: var(--g); display: flex; align-items: center; gap: 14px; }
+.kicker::before { content: ''; width: 46px; height: 5px; background: var(--g); flex: 0 0 46px; }
+.hd h2 { font: 700 64px/1.08 'NVIDIA Sans', Arial; margin: 16px 0 0; letter-spacing: -.012em; }
+.hd .sub { font: 400 31px/1.3 'NVIDIA Sans', Arial; color: var(--mid); margin-top: 12px; }
+.hd .sub b { color: #fff; font-weight: 500; }
+.badge { position: absolute; right: 90px; top: 50px; font: 700 20px/1 'NVIDIA Sans', Arial; letter-spacing: .12em; text-transform: uppercase; color: #fff;
+  border: 2px solid var(--g); padding: 11px 18px; border-radius: 999px; z-index: 5; background: rgba(0,0,0,.55); white-space: nowrap; }
+.badge span { color: var(--g); }
+
+/* footer */
+.num { position: absolute; right: 90px; top: 1018px; font: 700 22px/34px 'NVIDIA Sans', Arial; color: #fff; z-index: 6; text-shadow: 0 1px 6px rgba(0,0,0,.9); }
+.trk { position: absolute; left: 90px; top: 1016px; display: flex; gap: 12px; z-index: 6; }
+.trk span { position: relative; width: 116px; padding-top: 13px; font: 700 15px/1 'NVIDIA Sans', Arial; letter-spacing: .08em; text-transform: uppercase; color: #4a4a4a; }
+.trk span::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 5px; border-radius: 3px; background: #262626; }
+.trk span.done { color: #7c8a66; } .trk span.done::before { background: #4f6e1c; }
+.trk span.cur { color: var(--g); } .trk span.cur::before { background: var(--g); }
+.src { position: absolute; left: 90px; right: 90px; top: 968px; font: 400 19px/1.3 'NVIDIA Sans', Arial; color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.src b { color: #a5a5a5; font-weight: 500; }
+
+/* media cards */
+.vc { position: absolute; border-radius: 16px; overflow: hidden; background: #141414; box-shadow: 0 0 0 1px #1f1f1f; }
+.vc video, .vc img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.vc.contain video, .vc.contain img { object-fit: contain; background: #000; }
+.vc.white { background: #fff; } .vc.white video, .vc.white img { object-fit: contain; background: #fff; }
+.lab { position: absolute; left: 14px; bottom: 14px; background: rgba(0,0,0,.74); color: #fff; font: 500 22px/1 'NVIDIA Sans', Arial; padding: 9px 13px; border-radius: 8px; z-index: 3; white-space: nowrap; }
+.lab b { color: var(--g); font-weight: 700; }
+.lab.top { bottom: auto; top: 14px; }
+.lab.sm { font-size: 18px; padding: 7px 10px; left: 10px; bottom: 10px; }
+.cap { font: 700 20px/1 'NVIDIA Sans', Arial; color: var(--mid); letter-spacing: .12em; text-transform: uppercase; position: absolute; }
+.yt { position: absolute; border-radius: 16px; overflow: hidden; background: #111 center/cover no-repeat; box-shadow: 0 0 0 1px #1f1f1f; }
+.yt iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.yt video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.yt iframe { z-index: 2; } .yt .hint { z-index: 1; }
+.yt .hint { text-decoration: none; position: absolute; left: 0; right: 0; bottom: 0; padding: 70px 18px 14px; font: 500 20px/1.3 'NVIDIA Sans', Arial; color: #ddd; background: linear-gradient(0deg, rgba(0,0,0,.85), rgba(0,0,0,0)); }
+
+/* text blocks */
+.card { position: absolute; background: var(--soft); border: 1px solid var(--line); border-radius: 18px; }
+.callout { position: absolute; background: var(--soft); border-left: 6px solid var(--g); border-radius: 0 14px 14px 0; padding: 22px 30px; font: 400 30px/1.35 'NVIDIA Sans', Arial; color: #e6e6e6; }
+.callout b { color: #fff; }
+.pts { position: absolute; margin: 0; padding: 0; list-style: none; }
+.pts li { position: relative; padding: 0 0 0 34px; margin: 0 0 20px; font: 400 29px/1.34 'NVIDIA Sans', Arial; color: #d9d9d9; }
+.pts li::before { content: ''; position: absolute; left: 2px; top: 13px; width: 14px; height: 14px; border-radius: 3px; background: var(--g); }
+.pts li b { color: #fff; }
+.pts li small { display: block; font: 400 22px/1.35 'NVIDIA Sans', Arial; color: var(--mute); margin-top: 4px; }
+.pts.tight li { font-size: 26px; margin-bottom: 14px; }
+
+/* unlocked / still-open hand-off bar: the connective tissue between papers */
+.hand { position: absolute; left: 90px; right: 90px; top: 838px; height: 116px; display: flex; gap: 24px; }
+.hand > div { flex: 1; background: var(--soft); border: 1px solid var(--line); border-radius: 16px; padding: 18px 24px 16px 84px; position: relative; }
+.hand > div > i { position: absolute; left: 22px; top: 50%; margin-top: -22px; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-style: normal; }
+.hand > div > i svg { width: 26px; height: 26px; fill: none; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+.hand .u > i { background: var(--g); } .hand .u > i svg { stroke: #000; }
+.hand .o > i { background: transparent; border: 3px solid var(--amber); } .hand .o > i svg { stroke: var(--amber); }
+.hand h4 { margin: 0 0 5px; font: 700 17px/1 'NVIDIA Sans', Arial; letter-spacing: .14em; text-transform: uppercase; }
+.hand .u h4 { color: var(--g); } .hand .o h4 { color: var(--amber); }
+.hand p { margin: 0; font: 400 25px/1.25 'NVIDIA Sans', Arial; color: #e4e4e4; }
+.hand p b { color: #fff; } .hand p em { font-style: italic; }
+
+/* flow chips */
+.flow { position: absolute; display: flex; align-items: center; gap: 10px; }
+.fb { background: #161616; border: 1px solid #303030; border-radius: 12px; padding: 0 20px; height: 62px; display: flex; flex-direction: column; justify-content: center; gap: 3px; font: 700 24px/1 'NVIDIA Sans', Arial; white-space: nowrap; color: #fff; }
+.fb span i, .fb small i { font-style: italic; } .fb sub { font-size: .7em; }
+.fb small { font: 400 17px/1 'NVIDIA Sans', Arial; color: var(--mid); }
+.fb.g { background: var(--g); border-color: var(--g); color: #000; } .fb.g small { color: rgba(0,0,0,.75); }
+.fb.o { border-color: var(--g); } .fb.o small { color: var(--g); }
+.flow svg { width: 40px; height: 24px; flex: 0 0 40px; overflow: visible; }
+.flow svg path { fill: none; stroke: var(--g); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.flow.col { flex-direction: column; align-items: stretch; }
+.flow.col svg { align-self: center; transform: rotate(90deg); height: 30px; }
+.eq { position: absolute; font: 400 30px/1.3 'NVIDIA Sans', Arial; color: #fff; background: #0d0d0d; border: 1px solid var(--line); border-radius: 12px; padding: 14px 22px; white-space: nowrap; }
+.eq i { font-style: italic; } .eq .g { font-weight: 700; }
+
+/* big stats */
+.stat { position: absolute; background: rgba(8,8,8,.9); border: 1px solid var(--line); border-radius: 16px; padding: 16px 24px; display: flex; align-items: center; gap: 18px; z-index: 4; }
+.stat .n { font: 700 72px/1 'NVIDIA Sans', Arial; color: var(--g); letter-spacing: -.02em; white-space: nowrap; }
+.stat .t { font: 700 26px/1.15 'NVIDIA Sans', Arial; color: #fff; }
+.stat .t small { display: block; font: 700 15px/1 'NVIDIA Sans', Arial; letter-spacing: .14em; text-transform: uppercase; color: var(--mid); margin-top: 8px; }
+.stats { position: absolute; display: flex; gap: 20px; }
+.stats .stat { position: static; }
+
+/* full-bleed video + overlay title card */
+.fbl .bgv { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.fbl .bgv.contain { object-fit: contain; }
+.ftl { position: absolute; left: 44px; top: 44px; background: rgba(10,10,10,.88); border-radius: 22px; padding: 30px 34px 28px 30px; max-width: 1100px; z-index: 5; }
+.ftl h2 { font: 700 46px/1.1 'NVIDIA Sans', Arial; margin: 14px 0 0; }
+.ftl .sub2 { font: 400 26px/1.3 'NVIDIA Sans', Arial; color: var(--mid); margin-top: 10px; }
+.ftl .sub2 b { color: var(--g); }
+.ftl.br { left: auto; top: auto; right: 44px; bottom: 70px; }
+.tile { position: absolute; overflow: hidden; background: #111; }
+.tile video, .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tile .lab { font-size: 20px; }
+
+/* title + chapter dividers */
+.title .bgv, .chap .bgv { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .9; }
+.title .shade, .chap .shade { position: absolute; inset: 0; background:
+  linear-gradient(90deg, #000 0%, rgba(0,0,0,.95) 36%, rgba(0,0,0,.6) 64%, rgba(0,0,0,.3) 100%),
+  linear-gradient(0deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,0) 30%), linear-gradient(180deg, rgba(0,0,0,.75) 0%, rgba(0,0,0,0) 40%); }
+.title .venue { position: absolute; right: 96px; top: 74px; font: 700 24px/1 'NVIDIA Sans', Arial; letter-spacing: .14em; text-transform: uppercase; color: #fff; border: 2px solid var(--g); padding: 13px 22px; border-radius: 999px; }
+.title .venue span { color: var(--g); }
+.title .tw { position: absolute; left: 96px; top: 250px; width: 1300px; }
+.tbar { width: 170px; height: 8px; background: var(--g); }
+.title h1 { font: 700 124px/1.02 'NVIDIA Sans', Arial; letter-spacing: -.02em; margin: 30px 0 0; }
+.title .tsub { font: 400 50px/1.18 'NVIDIA Sans', Arial; color: #f2f2f2; margin-top: 26px; }
+.title .tsub b { color: var(--g); font-weight: 700; }
+.title .aff { font: 500 25px/1.5 'NVIDIA Sans', Arial; color: #bdbdbd; margin-top: 54px; letter-spacing: .02em; }
+@keyframes rise { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+@keyframes tbar { from { width: 0; } to { width: 170px; } }
+.slide.active.title .tbar, .slide.active.chap .tbar { animation: tbar 1s cubic-bezier(.2,.8,.2,1) both .2s; }
+.slide.active.title h1, .slide.active.chap h1 { animation: rise .9s cubic-bezier(.2,.8,.2,1) both .3s; }
+.slide.active.title .tsub, .slide.active.chap .q { animation: rise .9s cubic-bezier(.2,.8,.2,1) both .6s; }
+.slide.active.title .aff, .slide.active.chap .pl { animation: fadein 1.2s ease both 1s; }
+.chap .tw { position: absolute; left: 96px; top: 190px; width: 1560px; }
+.chap .cn { font: 700 26px/1 'NVIDIA Sans', Arial; letter-spacing: .18em; text-transform: uppercase; color: var(--g); margin-bottom: 26px; }
+.chap h1 { font: 700 150px/1 'NVIDIA Sans', Arial; letter-spacing: -.02em; margin: 28px 0 0; }
+.chap .q { font: 400 48px/1.2 'NVIDIA Sans', Arial; color: #f2f2f2; margin-top: 22px; }
+.chap .pl { margin-top: 56px; display: flex; flex-direction: column; gap: 14px; }
+.chap .pl div { font: 500 30px/1.2 'NVIDIA Sans', Arial; color: #dcdcdc; display: flex; align-items: baseline; gap: 18px; }
+.chap .pl div b { font: 700 22px/1 'NVIDIA Sans', Arial; color: #000; background: var(--g); border-radius: 6px; padding: 5px 9px; min-width: 44px; text-align: center; }
+.chap .pl div span { color: var(--mute); font-weight: 400; font-size: 24px; }
+.chap .mins { position: absolute; right: 96px; top: 74px; font: 700 24px/1 'NVIDIA Sans', Arial; letter-spacing: .14em; text-transform: uppercase; color: #fff; border: 2px solid var(--g); padding: 13px 22px; border-radius: 999px; }
+
+/* statement slides */
+.stmt .dim { position: absolute; inset: 0; background: rgba(0,0,0,.72); }
+.stmt .big { position: absolute; left: 150px; right: 150px; top: 330px; text-align: center; font: 400 60px/1.25 'NVIDIA Sans', Arial; color: #dcdcdc; }
+.stmt .big b { color: #fff; }
+.stmt .para { position: absolute; left: 240px; right: 240px; top: 560px; text-align: center; background: rgba(12,12,12,.92); border: 1px solid #33431a; border-radius: 22px; padding: 36px 40px 40px; }
+.stmt .para .k { font: 700 24px/1 'NVIDIA Sans', Arial; letter-spacing: .24em; text-transform: uppercase; color: var(--g); }
+.stmt .para .t { font: 700 62px/1.15 'NVIDIA Sans', Arial; margin-top: 20px; }
+.stmt .para .t b { color: var(--g); }
+
+/* three-up cards (why physics / lessons / open problems) */
+.c3 { position: absolute; left: 90px; right: 90px; display: flex; gap: 26px; }
+.c3 > div { flex: 1; background: var(--soft); border: 1px solid var(--line); border-top: 6px solid var(--g); border-radius: 18px; padding: 30px 32px 30px; }
+.c3 .n { font: 700 20px/1 'NVIDIA Sans', Arial; letter-spacing: .16em; text-transform: uppercase; color: var(--g); }
+.c3 h3 { font: 700 38px/1.14 'NVIDIA Sans', Arial; margin: 16px 0 14px; }
+.c3 p { font: 400 26px/1.4 'NVIDIA Sans', Arial; color: #cfcfcf; margin: 0 0 12px; }
+.c3 p b { color: #fff; }
+.c3 .ex { font: 400 21px/1.4 'NVIDIA Sans', Arial; color: var(--mute); margin-top: 16px; border-top: 1px solid var(--line); padding-top: 14px; }
+.c3 .ex b { color: #a9cf6e; font-weight: 500; }
+.c3.amber > div { border-top-color: var(--amber); } .c3.amber .n { color: var(--amber); }
+
+/* axes table (the lens) */
+.lens { position: absolute; left: 90px; right: 90px; top: 590px; display: grid; grid-template-columns: 300px 1fr; row-gap: 14px; column-gap: 0; }
+.lens .k { font: 700 26px/1.2 'NVIDIA Sans', Arial; color: var(--g); padding: 18px 0 18px 26px; background: var(--soft); border: 1px solid var(--line); border-right: 0; border-radius: 14px 0 0 14px; }
+.lens .k small { display: block; font: 400 19px/1.2 'NVIDIA Sans', Arial; color: var(--mute); margin-top: 6px; }
+.lens .v { display: flex; align-items: center; gap: 10px; padding: 0 22px; background: var(--soft); border: 1px solid var(--line); border-left: 0; border-radius: 0 14px 14px 0; font: 500 24px/1 'NVIDIA Sans', Arial; color: #e2e2e2; white-space: nowrap; }
+.lens .v span { background: #1b1b1b; border: 1px solid #333; border-radius: 9px; padding: 10px 14px; }
+.lens .v span.h { background: var(--g); border-color: var(--g); color: #000; font-weight: 700; }
+.lens .v em { color: var(--g); font-style: normal; font-weight: 700; }
+
+/* timeline */
+.tl { position: absolute; left: 90px; right: 90px; top: 250px; height: 660px; }
+.tl .axis { position: absolute; left: 0; right: 0; top: 330px; height: 4px; background: #2c2c2c; border-radius: 2px; }
+.tl .yr { position: absolute; top: 344px; font: 700 20px/1 'NVIDIA Sans', Arial; color: #6f6f6f; transform: translateX(-50%); }
+.tl .yr::before { content: ''; position: absolute; left: 50%; top: -22px; width: 2px; height: 14px; background: #3a3a3a; }
+.tl .p { position: absolute; width: 0; height: 0; }
+.tl .p .dot { width: 20px; height: 20px; border-radius: 50%; background: var(--c, var(--g)); box-shadow: 0 0 0 5px #000; position: absolute; left: -10px; z-index: 3; }
+.tl .p .stem { position: absolute; width: 2px; background: var(--c, var(--g)); opacity: .55; left: -1px; z-index: 1; }
+.tl .p .nm { position: absolute; left: 0; transform: translateX(-50%); z-index: 2; white-space: nowrap; font: 700 23px/1 'NVIDIA Sans', Arial; color: #fff; background: #111; border: 1px solid var(--c, var(--g)); border-radius: 10px; padding: 9px 12px; display: flex; gap: 9px; align-items: baseline; }
+.tl .p .nm b { color: var(--c, var(--g)); font-size: 17px; }
+.tl .p.dim .nm { color: #777; border-color: #333; } .tl .p.dim .nm b { color: #666; } .tl .p.dim .dot, .tl .p.dim .stem { background: #444; }
+.tl .chs { position: absolute; left: 0; right: 0; top: 590px; display: flex; gap: 18px; }
+.tl .chs div { flex: 1; border-top: 5px solid var(--c); padding-top: 14px; }
+.tl .chs b { display: block; font: 700 22px/1 'NVIDIA Sans', Arial; letter-spacing: .1em; text-transform: uppercase; color: var(--c); }
+.tl .chs span { display: block; font: 400 21px/1.3 'NVIDIA Sans', Arial; color: var(--mid); margin-top: 8px; }
+.tl .chs em { font-style: normal; color: var(--mute); font-size: 18px; display: block; margin-top: 6px; }
+
+/* recap chain */
+.chain { position: absolute; left: 90px; right: 90px; top: 236px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 22px; }
+.chain div { background: var(--soft); border: 1px solid var(--line); border-left: 5px solid var(--c, var(--g)); border-radius: 0 12px 12px 0; padding: 19px 22px 20px; }
+.chain b { font: 700 28px/1.1 'NVIDIA Sans', Arial; color: #fff; display: flex; gap: 10px; align-items: baseline; }
+.chain b i { font-style: normal; font-size: 18px; color: var(--c, var(--g)); letter-spacing: .08em; }
+.chain span { display: block; font: 400 24px/1.3 'NVIDIA Sans', Arial; color: var(--mid); margin-top: 6px; }
+
+/* references */
+.refs { position: absolute; left: 90px; right: 90px; top: 222px; columns: 2; column-gap: 50px; }
+.refs div { break-inside: avoid; margin: 0 0 20px; font: 400 23.5px/1.32 'NVIDIA Sans', Arial; color: #cfcfcf; padding-left: 50px; position: relative; }
+.refs div b { position: absolute; left: 0; top: 0; color: var(--g); font-weight: 700; }
+.refs div i { color: #fff; font-style: normal; font-weight: 500; }
+.refs div span { color: var(--mute); }
+
+.end .big { position: absolute; left: 96px; top: 330px; font: 700 150px/1 'NVIDIA Sans', Arial; letter-spacing: -.02em; }
+.end .sm { position: absolute; left: 96px; top: 520px; width: 1100px; font: 400 42px/1.3 'NVIDIA Sans', Arial; color: #e8e8e8; }
+.end .sm b { color: var(--g); }
+
+/* v2: roadmap columns, four-up cards, compact stats, four-column recap */
+.rm { position: absolute; left: 90px; right: 90px; display: flex; gap: 16px; }
+.rm > div { flex: 1; min-width: 0; background: var(--soft); border: 1px solid var(--line); border-top: 6px solid var(--c); border-radius: 16px; padding: 20px 18px 14px; }
+.rm h4 { margin: 0; font: 700 23px/1 'NVIDIA Sans', Arial; letter-spacing: .08em; text-transform: uppercase; color: var(--c); }
+.rm .q { font: 400 20px/1.3 'NVIDIA Sans', Arial; color: var(--mid); margin: 12px 0 8px; min-height: 80px; }
+.rm .m { font: 700 14px/1 'NVIDIA Sans', Arial; letter-spacing: .1em; text-transform: uppercase; color: var(--mute); margin-bottom: 12px; }
+.rm .p { font: 500 20px/1.2 'NVIDIA Sans', Arial; color: #fff; padding: 9px 0; border-top: 1px solid var(--line); display: flex; gap: 8px; align-items: baseline; white-space: nowrap; }
+.rm .p b { color: var(--c); font-size: 15px; } .rm .p i { font-style: normal; color: var(--mute); font-size: 15px; margin-left: auto; }
+.c3.four { gap: 20px; } .c3.four > div { padding: 26px 24px; }
+.c3.four h3 { font-size: 30px; } .c3.four p { font-size: 22.5px; } .c3.four .ex { font-size: 19px; }
+.stats.sm .stat .n { font-size: 54px; } .stats.sm .stat .t { font-size: 23px; }
+.chain.c4 { grid-template-columns: repeat(4, 1fr); gap: 12px 16px; }
+.chain.c4 div { padding: 12px 16px 13px; } .chain.c4 b { font-size: 23px; } .chain.c4 b i { font-size: 15px; } .chain.c4 span { font-size: 19px; }
+.refs div { margin-bottom: 9px !important; font-size: 18.5px !important; }
+.eq sub, .eq sup { font-size: .62em; }
+
+/* v3: figure panels, gain table, hyper-parameter list, weight bar */
+.pn { padding: 18px 22px 14px; } .pn .pt { font: 700 23px/1.2 'NVIDIA Sans', Arial; color: #fff; margin-bottom: 10px; } .pn .ps { font: 500 20px/1.3 'NVIDIA Sans', Arial; color: var(--mid); margin-top: 6px; }
+.pdp { margin-bottom: 2px; } .pdt { font: 500 18px/1.2 'NVIDIA Sans', Arial; color: var(--mid); margin: 6px 0 0 4px; } .pdt b { color: var(--g); font-weight: 700; } .pdp svg { height: 196px !important; }
+.gt { display: grid; grid-template-columns: 250px 1fr 1fr; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.gt > div { padding: 9px 20px; font: 500 24px/1.2 'NVIDIA Sans', Arial; color: #e4e4e4; border-top: 1px solid var(--line); background: var(--soft); }
+.gt .h { font: 700 21px/1.15 'NVIDIA Sans', Arial; color: var(--g); border-top: 0; background: #0a0a0a; padding: 12px 20px; }
+.gt .h small { display: block; font: 400 16px/1.2 'NVIDIA Sans', Arial; color: var(--mute); margin-top: 4px; }
+.gt .v { font-variant-numeric: tabular-nums; color: #fff; font-weight: 700; }
+.hp { position: absolute; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 26px; }
+.hp div { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--line); padding: 6px 2px; font: 400 21px/1.2 'NVIDIA Sans', Arial; color: var(--mid); }
+.hp b { color: #fff; font-weight: 700; }
+.wb { display: flex; height: 54px; border-radius: 10px; overflow: hidden; margin: 2px 0 10px; }
+.wb div { display: flex; flex-direction: column; justify-content: center; align-items: center; font: 700 18px/1.1 'NVIDIA Sans', Arial; color: #000; white-space: nowrap; overflow: hidden; }
+.wb div b { font: 700 13px/1 'NVIDIA Sans', Arial; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 3px; }
+.flow.col .fb { height: auto; min-height: 62px; padding: 8px 20px; white-space: normal; }
+
+.rm h4 { font-size: 26px; } .rm .q { font-size: 21px; min-height: 86px; } .rm .p { font-size: 23px; padding: 10px 0; } .rm .p b, .rm .p i { font-size: 16px; }
+.wb div { font-size: 22px; }
+
+/* v4: "under the hood" slides */
+.uh { position: absolute; left: 90px; right: 90px; display: flex; gap: 14px; align-items: stretch; }
+.uh .ar { flex: 0 0 34px; width: 34px; align-self: center; overflow: visible; } .uh .ar path { fill: none; stroke: var(--g); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.uc { background: var(--soft); border: 1px solid var(--line); border-radius: 16px; padding: 14px 20px 12px; overflow: hidden; font: 400 21.5px/1.3 'NVIDIA Sans', Arial; color: #dedede; min-width: 0; }
+.uc.g { border-color: var(--g); } .uc.k { border-left: 6px solid var(--g); border-radius: 0 14px 14px 0; } .uc.k2 { border-left: 6px solid var(--amber); border-radius: 0 14px 14px 0; }
+.uc h5 { margin: 0 0 8px; font: 700 15px/1 'NVIDIA Sans', Arial; letter-spacing: .16em; text-transform: uppercase; color: var(--g); } .uc.k2 h5 { color: var(--amber); }
+.uc ul, .uc ol { margin: 0; padding: 0; list-style: none; } .uc p { margin: 0; }
+.uc li { position: relative; padding-left: 20px; margin-bottom: .34em; } .uc ul li::before { content: ''; position: absolute; left: 2px; top: .52em; width: 8px; height: 8px; border-radius: 2px; background: var(--g); }
+.uc ol { counter-reset: st; } .uc ol li { padding-left: 34px; counter-increment: st; } .uc ol li::before { content: counter(st); position: absolute; left: 0; top: .08em; width: 24px; height: 24px; border-radius: 50%; background: var(--g); color: #000; font: 700 15px/24px 'NVIDIA Sans', Arial; text-align: center; }
+.uc .eqs li { color: #fff; font-family: 'NVIDIA Sans', 'DejaVu Sans', Arial; }
+.usc { flex: 1; display: flex; gap: 14px; } .usc div { flex: 1; background: rgba(8,8,8,.9); border: 1px solid var(--line); border-radius: 14px; padding: 12px 20px; display: flex; align-items: center; gap: 16px; min-width: 0; }
+.usc b { font: 700 46px/1 'NVIDIA Sans', Arial; color: var(--g); white-space: nowrap; letter-spacing: -.02em; } .usc span { font: 500 21px/1.2 'NVIDIA Sans', Arial; color: #e4e4e4; }
+.s-uh .hd h2 { font-size: 44px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* v5: larger paper count */
+.s-uh .hd h2 { font-size: 38px !important; }
+.chap .pl { gap: 9px; } .chap .pl div { font-size: 27px; } .chap .pl div span { font-size: 21px; }
+.rm .p { font-size: 20.5px !important; padding: 7px 0 !important; } .rm .q { min-height: 78px !important; }
+.chain.c4 { gap: 9px 14px; } .chain.c4 div { padding: 9px 14px 10px; } .chain.c4 b { font-size: 21px; } .chain.c4 span { font-size: 17.5px; margin-top: 4px; }
+.refs div { margin-bottom: 6px !important; font-size: 16.5px !important; padding-left: 40px !important; }
+
+.usc b { font-size: 40px; } .usc span { font-size: 19.5px; } .usc div { padding: 8px 16px; gap: 12px; }
+.uc.k, .uc.k2 { font-size: 21px; padding: 12px 20px 10px; }
+
+.uc { font-size: 23px; } .uc.k, .uc.k2 { font-size: 22px; }
+
+/* v6: architecture diagrams + math */
+.katex { font-size: 1.08em; }
+.fb i, .eq i, .pts li i, .callout i, .hd .sub i, .c3 p i, .lens i, .pdt i, .hp i, .uc i { font-family: KaTeX_Math, 'Times New Roman', serif; font-style: italic; font-size: 1.1em; }
+.eq { font-family: KaTeX_Main, 'Times New Roman', serif; }
+.dg { padding: 12px 12px 0; overflow: hidden; }
+.dgc { position: relative; }
+.dn { position: absolute; z-index: 2; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 4px 10px; overflow: hidden;
+  font: 400 15px/1.22 'NVIDIA Sans', Arial; color: #cfcfcf; background: #171717; border: 2px solid #3d3d3d; }
+.dn b { font: 700 18.5px/1.18 'NVIDIA Sans', Arial; color: #fff; display: block; }
+.dn small { display: block; font: 400 14.5px/1.22 'NVIDIA Sans', Arial; color: #b9b9b9; margin-top: 4px; }
+.dn .katex { font-size: 1.02em; }
+.dn.net { border-color: var(--g); background: #0f1a06; }
+.dn.pol { border-color: var(--g); background: var(--g); } .dn.pol b { color: #000; } .dn.pol small { color: rgba(0,0,0,.78); }
+.dn.frz { border: 2px dashed #8a8a8a; background: #1c1c1c; }
+.dn.loss { border-color: var(--amber); background: #1b1503; } .dn.loss b { color: #ffd76a; }
+.dn.sim { border-color: #e8e8e8; background: #e8e8e8; } .dn.sim b { color: #000; } .dn.sim small { color: #333; }
+.dl { position: absolute; z-index: 3; transform: translate(-50%, -50%); white-space: nowrap; background: #101010; padding: 1px 7px; border-radius: 6px; font: 500 14.5px/1.25 'NVIDIA Sans', Arial; color: #c9c9c9; }
+.dl.d { color: #ffd76a; } .dl.g { color: #a8dc2f; }
+.dgp { position: absolute; z-index: 0; border: 1.5px dashed #3a3a3a; border-radius: 14px; }
+.dgp span { position: absolute; left: 12px; top: 6px; font: 700 13px/1 'NVIDIA Sans', Arial; letter-spacing: .12em; text-transform: uppercase; color: #8c8c8c; }
+.dlg { position: absolute; left: 14px; right: 14px; bottom: 10px; display: flex; gap: 20px; flex-wrap: nowrap; font: 500 14.5px/1 'NVIDIA Sans', Arial; color: #9a9a9a; white-space: nowrap; }
+.dlg span { display: flex; align-items: center; gap: 7px; }
+.dlg .k { width: 16px; height: 16px; border-radius: 4px; border: 2px solid #3d3d3d; background: #171717; display: inline-block; }
+.dlg .k.net { border-color: var(--g); background: #0f1a06; } .dlg .k.pol { border-color: var(--g); background: var(--g); } .dlg .k.frz { border: 2px dashed #8a8a8a; }
+.dlg .k.loss { border-color: var(--amber); background: #1b1503; } .dlg .k.sim { border-color: #e8e8e8; background: #e8e8e8; }
+.dlg .ln { width: 30px; height: 0; border-top: 3px solid var(--g); display: inline-block; } .dlg .ln.d { border-top: 3px dashed var(--amber); }
+.uhr { position: absolute; display: flex; flex-direction: column; gap: 12px; }
+.uhr .obj { flex: 0 1 auto; max-height: 330px; } .uhr .rec { flex: 1 1 0; min-height: 0; }
+.uhr .uc { font-size: 20px; padding: 14px 18px 12px; }
+.uc .eqs li { margin-bottom: .5em; line-height: 1.38; }
+
+.s-uh .hd { top: 44px; } .s-uh .hd h2 { margin-top: 10px; }
+.s-uh .uc.obj, .s-uh .uc.rec { font-size: 19.5px; padding: 12px 20px 8px; }
+.s-uh .uc.obj .eqs li, .s-uh .uc.rec li { margin-bottom: .22em; line-height: 1.3; }
+.s-uh .usc b { font-size: 36px; } .s-uh .usc div { padding: 6px 16px; }
+.dn { padding: 4px 12px; } .dn b { font-size: 19px; } .dn small { font-size: 15px; }
+
+/* v7: no numbering / minutes */
+.chap .pl div b:empty { min-width: 0; width: 12px; height: 12px; padding: 0; border-radius: 50%; align-self: center; }
+.title .aff { font-size: 30px; color: #d6d6d6; } .title .aff b { color: #fff; font-weight: 700; }
+.badge { letter-spacing: .12em; }
+
+.tile video.whole { object-fit: contain; background: #000; }
+
+.s-uh .usc span { font-size: 18px; line-height: 1.15; }
+.tile .stat .n { line-height: 1.12; }
+
+/* v8: captions under media, tidier walls, larger chip sub-labels, 90 px margins everywhere */
+.vcap { position: absolute; font: 500 20px/1.25 'NVIDIA Sans', Arial; color: #d2d2d2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vcap b { color: var(--g); font-weight: 700; } .vcap.sm { font-size: 17px; }
+.fb { height: 68px; } .fb small { font-size: 20px; }
+.title .tw, .chap .tw { left: 90px; } .title .venue { right: 90px; }
+.ftl { max-width: 800px; }
+.title:not(.end) .bgv { transform: translateX(400px); }
+
+/* v9: step-by-step builds */
+.fx.stepmark { display: none; }                                   /* invisible build steps for animated figures */
+.fx.spot.on { opacity: .38; } .fx.spot.on.current { opacity: 1; }  /* earlier steps dim while a later one is explained */
+.deck-overview .fx.spot, .mode-print .fx.spot { opacity: 1 !important; }
+.slide[data-last-step] .fx.spot.on { opacity: 1; }                 /* fully built: everything at full strength */
+.swap { position: absolute; overflow: hidden; border-radius: 14px; }
+.swap > .lay { position: absolute; inset: 0; background: #000; }
+[data-anim] { overflow: visible; }
+[data-anim-error] { outline: 3px dashed #ff6b5e; }
+.deck-frozen .slide, .deck-frozen .slide *, .deck-frozen .slide *::before, .deck-frozen .slide *::after { transition: none !important; animation-duration: .001s !important; animation-delay: 0s !important; }
+
+/* v10: deck-wide values that the chapter passes had set one chapter at a time */
+.hand { gap: 30px; }
+.hand h4 { font-size: 18px; }
+.vcap.sm { font-size: 18px; }
+.fb i, .eq i, .pts li i, .callout i, .hd .sub i, .c3 p i, .lens i, .pdt i, .hp i, .uc i { line-height: 0; }   /* inline math must not stretch its line */
+.chap .pl div span { font-size: 24px; color: var(--mid); }
+.fbl .num { right: 78px; padding: 0 12px; border-radius: 8px; background: rgba(10,10,10,.74); text-shadow: none; }   /* readable on any footage */
+
+/* v11: diagrams and slides that build click by click (tools/uh.py BUILD, build.py dia() / flow() steps) */
+.de .fl { opacity: 0; stroke-dasharray: 12 24; }
+@keyframes dflow { to { stroke-dashoffset: -36; } }
+.de.fx.current .fl, .slide[data-at-step="0"] .de.s0 .fl, .slide[data-last-step] .de.g .fl { opacity: .95; animation: dflow .9s linear infinite; }   /* pulses run along what is being explained; on the finished slide, along the action path */
+.deck-frozen .de .fl { animation: none !important; }
+.mode-print .de .fl { display: none; }
+.s0 { transition: opacity .5s ease; }                               /* shown from the start; dims like .fx.spot while a later click is explained */
+.slide[data-at-step]:not([data-at-step="0"]):not([data-last-step]) .s0 { opacity: .38; }
+.deck-overview .s0, .mode-print .s0 { opacity: 1 !important; }
+.dgc .dl.fx, .dgc .dl.fx.on { transform: translate(-50%, -50%); }   /* edge labels keep their centring when they are build steps */
+.dn.fx.current { box-shadow: 0 0 0 3px rgba(255,255,255,.2); }
+.fx.only, .fx.only.on { opacity: 0; } .fx.only.on.current { opacity: 1; }     /* visible only while its own click is the current one */
+.s0only { transition: opacity .5s ease; } .slide[data-at-step]:not([data-at-step="0"]) .s0only { opacity: 0; }
+.dsay { position: absolute; right: 16px; bottom: 5px; width: 800px; height: 26px; pointer-events: none; }
+.dsay span { position: absolute; right: 0; bottom: 0; white-space: nowrap; font: 700 19px/26px 'NVIDIA Sans', Arial; color: #fff; }
+.mode-print .dsay, .deck-overview .dsay { display: none; }
+.dgx { position: absolute; }                                         /* a diagram placed on a hand-written slide (dia()) */
+.dgx .dsay { position: absolute; left: 0; right: 0; width: auto; bottom: -34px; } .dgx .dsay span { left: 0; right: auto; font-size: 22px; }
+.dgx .dn { padding: 6px 14px; } .dgx .dn b { font-size: 24px; line-height: 1.16; } .dgx .dn small { font-size: 20px; line-height: 1.2; margin-top: 5px; }
+.dgx .dl { font-size: 20px; padding: 1px 8px; background: #000; } .dgx .dgp span { font-size: 16px; }
+.dgx .dlg { position: absolute; left: 0; right: 0; bottom: -30px; }
+
+/* v12: fixes found while the paper slides were rebuilt */
+.mode-print .dgc .dl.fx { transform: translate(-50%, -50%) !important; }                 /* print: edge labels stay centred on their arrows */
+.dgc .dl.fx.spot.on { opacity: 1; filter: brightness(.38); } .dgc .dl.fx.spot.on.current, .slide[data-last-step] .dgc .dl.fx.spot.on { filter: none; }   /* a dimmed edge label stays opaque, so its arrow does not strike it through */
+.slide[data-at-step]:not([data-at-step="0"]):not([data-last-step]) .dgc .dl.s0 { opacity: 1; filter: brightness(.38); }
+.deck-overview .dgc .dl, .mode-print .dgc .dl { filter: none !important; }
+.dn.fx.current { box-shadow: inset 0 0 0 3px rgba(255,255,255,.22); }                    /* the ring of the current click stays inside the box */
+.dgx .dsay span { font-size: 24px; }
+
+/* v13: narration in the speaker notes (tools/narration/*.json) */
+.deck-notes { max-height: 44vh; }
+.deck-notes p.nar { margin: 0 0 8px; padding: 3px 10px 3px 12px; border-left: 4px solid transparent; font-size: 19px; line-height: 1.5; color: #aab2a4; }
+.deck-notes p.nar b { display: inline-block; min-width: 62px; margin-right: 8px; font: 700 13px/1 'NVIDIA Sans', Arial; letter-spacing: .06em; color: #7f8a78; vertical-align: 2px; }
+.deck-notes p.nar.cur { border-left-color: var(--g); background: rgba(118,185,0,.10); color: #fff; } .deck-notes p.nar.cur b { color: var(--g); }
+.deck-notes p.nar.done { color: #6f776a; }
+.deck-notes p.nas { margin: 8px 0 0; padding-left: 16px; font-size: 15px; color: #d9b85c; }
+.deck-notes .nold { margin-top: 12px; padding-top: 8px; border-top: 1px solid #2c3328; font-size: 14.5px; line-height: 1.5; color: #7f8779; }
+.deck-notes .nold .nh2 { font: 700 12px/1 'NVIDIA Sans', Arial; letter-spacing: .1em; color: #5f6a58; margin-bottom: 6px; }
+
+/* v14: the main path and optional slides (tools/lecture_path.py) */
+.num[data-dive]::after { content: ' \25BE'; color: var(--g); font-size: .9em; opacity: .75; }      /* optional slides follow: Down key */
+.slide[data-opt] .num::before { content: '\25E6 '; color: var(--g); opacity: .75; }                 /* this slide is optional */
+.deck-overview .slide[data-opt] { opacity: .5; }
+.mode-print .num[data-dive]::after, .mode-print .slide[data-opt] .num::before { content: none; }
+
+/* v15: PDF export (index.html?print, Chrome "Save as PDF" or --print-to-pdf): one slide per 1920 x 1080 page, backgrounds kept */
+@media print {
+  @page { size: 1920px 1080px; margin: 0; }
+  html, body { margin: 0 !important; padding: 0 !important; background: #000 !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .mode-print .slide { width: 1920px; height: 1080px; overflow: hidden; break-inside: avoid; }
+}

@@ -1,0 +1,53 @@
+/* Shared layout for the GRAIL oral decks. Themes live in each HTML file. */
+@font-face { font-family: 'NVIDIA Sans'; src: url('fonts/NVIDIASans_Lt.ttf') format('truetype'); font-weight: 300; }
+@font-face { font-family: 'NVIDIA Sans'; src: url('fonts/NVIDIASans_Rg.ttf') format('truetype'); font-weight: 400; }
+@font-face { font-family: 'NVIDIA Sans'; src: url('fonts/NVIDIASans_It.ttf') format('truetype'); font-weight: 400; font-style: italic; }
+@font-face { font-family: 'NVIDIA Sans'; src: url('fonts/NVIDIASans_Md.ttf') format('truetype'); font-weight: 500; }
+@font-face { font-family: 'NVIDIA Sans'; src: url('fonts/NVIDIASans_Bd.ttf') format('truetype'); font-weight: 700; }
+
+:root { --nv: #76B900; --nv-bright: #8fd400; --deck-progress: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
+body { font-family: 'NVIDIA Sans', Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }
+
+.deck { position: fixed; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: 50% 50%; }
+.slide { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden;
+  opacity: 0; visibility: hidden; transition: opacity .55s ease, visibility 0s linear .55s; }
+.slide.active { opacity: 1; visibility: visible; transition: opacity .55s ease, visibility 0s; z-index: 2; }
+video { display: block; }
+
+/* builds */
+.fx { opacity: 0; transform: translateY(26px); transition: opacity .6s ease, transform .7s cubic-bezier(.2,.8,.2,1), filter .6s ease; }
+.fx.on { opacity: 1; transform: none; }
+.fx.fade { transform: none; }
+.fx.left { transform: translateX(-60px); } .fx.right { transform: translateX(60px); }
+.fx.zoom { transform: scale(.86); } .fx.blur { filter: blur(14px); transform: none; }
+.fx.left.on, .fx.right.on, .fx.zoom.on { transform: none; } .fx.blur.on { filter: none; }
+.fx.keep { opacity: 1; transform: none; }   /* always visible; only gets .on/.current for styling */
+
+/* chrome */
+.deck-progress { position: fixed; left: 0; right: 0; bottom: 0; height: 4px; z-index: 50; background: rgba(255,255,255,.06); }
+.deck-progress i { display: block; height: 100%; width: calc(var(--deck-progress) * 100%); background: var(--nv); transition: width .5s ease; }
+.deck-counter { position: fixed; right: 14px; bottom: 10px; z-index: 50; font: 500 12px 'NVIDIA Sans', Arial; color: rgba(255,255,255,.35); letter-spacing: .08em; }
+.deck-black { position: fixed; inset: 0; background: #000; z-index: 90; opacity: 0; pointer-events: none; transition: opacity .3s; }
+.deck-blackout .deck-black { opacity: 1; }
+.deck-help { position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 95; display: none; background: #111; color: #ddd;
+  border: 1px solid #333; border-top: 3px solid var(--nv); padding: 22px 30px; font: 15px/1.6 'NVIDIA Sans', Arial; border-radius: 6px; }
+.deck-help td:first-child { color: var(--nv); padding-right: 24px; font-weight: 700; } .deck-help h3 { margin: 0 0 8px; } .deck-help p { color: #777; margin: 10px 0 0; }
+.deck-show-help .deck-help { display: block; }
+
+/* overview */
+.deck-overview .slide { opacity: 1; visibility: visible; cursor: pointer; transition: transform .45s ease, box-shadow .2s; outline: 3px solid transparent; }
+.deck-overview .slide.active { outline-color: var(--nv); }
+.deck-overview .slide:hover { box-shadow: 0 0 0 6px rgba(118,185,0,.6); }
+.deck-overview .fx { opacity: 1; transform: none; filter: none; }
+
+/* print / PDF: one slide per page, fully built */
+.mode-print, .mode-print body { overflow: visible; height: auto; background: #fff; }
+.mode-print .deck { position: static; transform: none; width: 1920px; height: auto; }
+.mode-print .slide { position: relative; opacity: 1; visibility: visible; page-break-after: always; break-after: page; }
+.mode-print *, .mode-print *::before, .mode-print *::after { animation-duration: 0s !important; animation-delay: 0s !important; transition: none !important; }
+.mode-print .fx { opacity: 1 !important; transform: none !important; filter: none !important; }
+@page { size: 1920px 1080px; margin: 0; }
+
+.deck-hide-cursor, .deck-hide-cursor * { cursor: none !important; }
