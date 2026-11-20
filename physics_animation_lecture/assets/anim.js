@@ -83,8 +83,8 @@
     Array.prototype.forEach.call(slide.querySelectorAll('.fx[data-step]'), function (f) { var k = f.getAttribute('data-step'); if (!keys[k]) { keys[k] = 1; n++; } });
     return n;
   }
-  function setup() {
-    Array.prototype.forEach.call(document.querySelectorAll('[data-anim]'), function (el) {
+  function setup(scope) {
+    Array.prototype.forEach.call((scope || document).querySelectorAll('[data-anim]'), function (el) {
       if (el._anim) return;
       el._anim = true;
       var name = el.getAttribute('data-anim'), draw = null;
@@ -103,18 +103,22 @@
   function now() { return performance.now() / 1000; }
   function tick() {
     raf = 0;
-    if (!cur) return;
+    if (!cur || document.hidden) return;
     var t = now(), fr = { t: t - t0, step: curStep, ts: t - ts0, steps: nsteps }, any = false;
     figs.forEach(function (f) { if (f.slide === cur) { any = true; drawFig(f, fr); } });
     if (any) raf = requestAnimationFrame(tick);
   }
 
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden){if(raf) cancelAnimationFrame(raf);raf=0;}
+    else if(cur && FROZEN===null && !raf) raf=requestAnimationFrame(tick);
+  });
   window.DeckAnim = {
     A: A,
     register: function (name, fn) { defs[name] = fn; },
     /** deck.js calls this whenever the shown slide or its build step changes */
     sync: function (slide, step, steps) {
-      setup();
+      setup(FROZEN !== null ? document : slide);
       if (FROZEN !== null) {
         figs.forEach(function (f) {
           var T = FROZEN === 'still' ? f.still : FROZEN;
@@ -124,7 +128,7 @@
       }
       var t = now();
       if (slide !== cur) {
-        figs.forEach(function (f) { if (f.slide !== slide) drawFig(f, stillOf(f)); });
+        figs.forEach(function (f) { if (f.slide === cur) drawFig(f, stillOf(f)); });
         cur = slide; t0 = t; ts0 = t; curStep = step;
       } else if (step !== curStep) { curStep = step; ts0 = t; }
       nsteps = steps;

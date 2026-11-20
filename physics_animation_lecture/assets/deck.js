@@ -16,9 +16,11 @@
   var params = new URLSearchParams(location.search);
   var MODE = params.has('print') ? 'print' : 'main';
   var deck = document.querySelector('.deck');
-  // typeset $...$ with KaTeX before anything is measured
-  if (window.renderMathInElement) {
-    try { renderMathInElement(deck, { delimiters: [{ left: '$', right: '$', display: false }], throwOnError: false, ignoredClasses: ['notes'] }); } catch (e) {}
+  // Typeset on first visit; print and overview initialize all slides.
+  function typeset(scope) {
+    if (!scope || scope._mathReady || !window.renderMathInElement) return;
+    scope._mathReady = true;
+    try { renderMathInElement(scope, { delimiters: [{ left: '$', right: '$', display: false }], throwOnError: false, ignoredClasses: ['notes'] }); } catch (e) {}
   }
   var slides = Array.prototype.slice.call(deck.querySelectorAll(':scope > section.slide'));
   var N = slides.length;
@@ -43,15 +45,31 @@
   Array.prototype.forEach.call(deck.querySelectorAll('video'), function (v) {
     v.muted = true; v.loop = !v.hasAttribute('data-once'); v.playsInline = true;
     v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
-    if (!v.getAttribute('preload')) v.setAttribute('preload', 'metadata');
+    v.setAttribute('preload', 'none');
     if (!v.hasAttribute('poster')) {
-      var src = v.getAttribute('src') || (v.querySelector('source') || {}).src || '';
+      var src = v.getAttribute('data-src') || v.getAttribute('src') || (v.querySelector('source') || {}).src || '';
       var m = src.match(/([^\/]+)\.mp4$/);
-      if (m) v.setAttribute('poster', src.replace(/video\/[^\/]+\.mp4$/, 'poster/' + m[1] + '.jpg'));
+      if (m && !v.getAttribute('data-poster')) v.setAttribute('data-poster', src.replace(/video\/[^\/]+\.mp4$/, 'poster/' + m[1] + '.jpg'));
     }
   });
 
-  var cur = 0, step = 0;
+  var cur = 0, step = 0, warmTimer = 0, fontsReady = false;
+  function poster(v) { if (!v.getAttribute('poster') && v.dataset.poster) v.setAttribute('poster', v.dataset.poster); }
+  function hydrate(v, preload) {
+    poster(v); v.preload = preload || 'metadata';
+    if (!v.getAttribute('src') && v.dataset.src) v.setAttribute('src', v.dataset.src);
+  }
+  function prepareSlide(s, imagesOnly) {
+    Array.prototype.forEach.call(s.querySelectorAll('img[data-src]'), function(im){ if (!im.getAttribute('src')) im.src=im.dataset.src; });
+    Array.prototype.forEach.call(s.querySelectorAll('video'), function(v){ poster(v); });
+  }
+  function recycleMedia(keep, neighbour) {
+    Array.prototype.forEach.call(deck.querySelectorAll('video[src]'), function(v){
+      var s=v.closest('section.slide');
+      if (s !== keep && s !== neighbour) { v.pause(); v.removeAttribute('src'); v.preload='none'; v.load(); v._started=false; }
+    });
+  }
+
 
   // ---------- counters ----------
   function fmt(x, d) { return x.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }); }
@@ -99,6 +117,8 @@
       }
     });
     var S = slides[cur], st = steps[cur];
+    typeset(S); prepareSlide(S);
+    if (fontsReady && !S._fitReady) { fitText(S); S._fitReady=true; document.fonts.ready.then(function(){fitText(S);}); }
     var limit = step > 0 ? st.keys[step - 1] : -Infinity;
     st.frags.forEach(function (f) {
       var k = parseFloat(f.getAttribute('data-step'));
@@ -109,6 +129,7 @@
     if (step === st.keys.length) S.setAttribute('data-last-step', ''); else S.removeAttribute('data-last-step');
     Array.prototype.forEach.call(S.querySelectorAll('video'), function (v) {
       if (revealed(v, S)) {
+        hydrate(v, 'auto');
         if (!v._started) { v._started = true; try { v.currentTime = 0; } catch (e) {} }
         else if (v.ended && v.hasAttribute('data-once')) return;   // play-once videos hold their last frame
         var p = v.play(); if (p && p.catch) p.catch(function () {});
@@ -129,10 +150,15 @@
     if (MODE === 'main') {
       try { if (history.replaceState) history.replaceState(null, '', '#' + (cur + 1) + (step ? '.' + step : '')); } catch (e) {}   // not allowed when a <base href> is set (private builds)
     }
-    // preload neighbours
-    [cur + 1, cur + 2].forEach(function (j) {
-      if (j < N) Array.prototype.forEach.call(slides[j].querySelectorAll('video'), function (v) { v.preload = 'auto'; if (v.readyState < 3) v.load(); });   // buffer the next two slides fully (matters for remote viewing)
-    });
+    // Keep only the current page and one navigation neighbour in the decoder pool.
+    clearTimeout(warmTimer);
+    var nextIndex=mainFrom(cur,1), neighbour=nextIndex>=0?slides[nextIndex]:null;
+    recycleMedia(S,neighbour);
+    var at=cur;
+    warmTimer=setTimeout(function(){
+      if (cur!==at || document.hidden || !neighbour || (navigator.connection && navigator.connection.saveData)) return;
+      Array.prototype.slice.call(neighbour.querySelectorAll('video'),0,2).forEach(function(v){ hydrate(v,'metadata'); });
+    },1200);
   }
 
   // ---------- lazy YouTube embeds: <div class="yt" data-yt="ID" data-start="12"> only loads while its slide is active ----------
@@ -242,6 +268,7 @@
   function toggleOverview(force) {
     overview = typeof force === 'boolean' ? force : !overview;
     document.documentElement.classList.toggle('deck-overview', overview);
+    if (overview) { slides.forEach(function(s){ typeset(s); prepareSlide(s,true); }); if(window.DeckAnim) window.DeckAnim.stillAll(); fitText(); }
     var cols = Math.ceil(Math.sqrt(N * 1.0)) + 1, rows = Math.ceil(N / cols);
     var gap = 28, cw = (W - gap * (cols + 1)) / cols, sc = cw / W, ch = H * sc;
     var oy = (H - (rows * ch + (rows - 1) * gap)) / 2;
@@ -286,6 +313,7 @@
 
   // ---------- print mode ----------
   function printBuild() {
+    slides.forEach(function(s){ typeset(s); prepareSlide(s,true); });
     slides.forEach(function (s, i) {
       s.classList.add('active');
       steps[i].frags.forEach(function (f) { f.classList.add('on'); });
@@ -296,25 +324,26 @@
   }
 
   // ---------- auto-fit: shrink the font of .fit boxes until their content fits ----------
-  function fitText() {
-    Array.prototype.forEach.call(deck.querySelectorAll('.fit'), function (el) {
+  function fitText(scope) {
+    var fitRoot=scope || deck;
+    Array.prototype.forEach.call(fitRoot.querySelectorAll('.fit'), function (el) {
       var fs = parseFloat(getComputedStyle(el).fontSize), n = 0;
       while (el.scrollHeight > el.clientHeight + 1 && fs > 13 && n++ < 40) { fs -= 0.5; el.style.fontSize = fs + 'px'; }
       el.setAttribute('data-fs', fs);
       if (el.scrollHeight > el.clientHeight + 1) el.setAttribute('data-overflow', '1');
     });
     // layout self-check (read with: chrome --headless --dump-dom): single-line boxes that are clipped
-    Array.prototype.forEach.call(deck.querySelectorAll('.s-uh .hd h2, .usc div, .src, .lab'), function (el) {
+    Array.prototype.forEach.call(fitRoot.querySelectorAll('.s-uh .hd h2, .usc div, .src, .lab'), function (el) {
       if (el.scrollWidth > el.clientWidth + 2) el.setAttribute('data-clip', '1');
     });
-    Array.prototype.forEach.call(deck.querySelectorAll('.dn'), function (el) {      // diagram nodes: text must fit the box
+    Array.prototype.forEach.call(fitRoot.querySelectorAll('.dn'), function (el) {      // diagram nodes: text must fit the box
       if (el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1) el.setAttribute('data-overflow', '1');
     });
-    Array.prototype.forEach.call(deck.querySelectorAll('.dl'), function (el) {      // edge labels must stay inside the canvas
+    Array.prototype.forEach.call(fitRoot.querySelectorAll('.dl'), function (el) {      // edge labels must stay inside the canvas
       var c = el.parentNode.getBoundingClientRect(), r = el.getBoundingClientRect();
       if (r.left < c.left - 1 || r.right > c.right + 1 || r.top < c.top - 1 || r.bottom > c.bottom + 1) el.setAttribute('data-clip', '1');
     });
-    Array.prototype.forEach.call(deck.querySelectorAll('.dgc'), function (c) {     // diagram edge labels must not sit on a node or on each other
+    Array.prototype.forEach.call(fitRoot.querySelectorAll('.dgc'), function (c) {     // diagram edge labels must not sit on a node or on each other
       var ls = Array.prototype.slice.call(c.querySelectorAll('.dl')), ns = Array.prototype.slice.call(c.querySelectorAll('.dn'));
       function hit(a, b, m) { return a.left < b.right - m && b.left < a.right - m && a.top < b.bottom - m && b.top < a.bottom - m; }
       ls.forEach(function (l, i) {
@@ -375,8 +404,17 @@
     });
     var pre = document.createElement('pre'); pre.id = 'audit-json'; pre.textContent = JSON.stringify(out); document.body.appendChild(pre);
   }
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitText); else window.addEventListener('load', fitText);
+  function fontsLoaded(){
+    fontsReady=true;
+    if(MODE==='print' || params.has('audit')) { slides.forEach(typeset); fitText(); }
+    else { fitText(slides[cur]); slides[cur]._fitReady=true; }
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fontsLoaded); else window.addEventListener('load', fontsLoaded);
 
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden) Array.prototype.forEach.call(deck.querySelectorAll('video[src]'),function(v){v.pause();});
+    else if(MODE==='main') render(false);
+  });
   // ---------- boot ----------
   if (MODE === 'print') { printBuild(); return; }
   fit(); window.addEventListener('resize', fit);

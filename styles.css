@@ -392,14 +392,38 @@ section h2 {
   font-weight:600;
 }
 
-.lecture-note {
-  margin:0;
-  font-size:.95rem;
-  line-height:1.75;
-  color:var(--muted);
+/* ---------------- Featured lecture ---------------- */
+#lecture { padding-block:clamp(2rem, 4vw, 3rem); contain-intrinsic-size:auto 320px; }
+.lecture-card {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:2rem;
+  padding:clamp(1.5rem, 4vw, 3rem);
+  border:1px solid var(--border-strong);
+  border-radius:16px;
+  background:linear-gradient(120deg, #171717, var(--surface));
+  color:var(--text);
+  text-decoration:none;
+  transition:border-color .2s ease;
 }
-
-.lecture-note a { text-decoration:underline; text-underline-offset:3px; }
+.lecture-card:hover { border-color:var(--muted); }
+.lecture-card:focus-visible { outline:2px solid var(--text); outline-offset:5px; }
+.lecture-card .section-kicker { color:var(--muted); }
+.lecture-card h2 { font-size:clamp(1.8rem, 4vw, 3rem); line-height:1.15; }
+.lecture-card p { margin:1rem 0 0; color:var(--muted); }
+.lecture-cta {
+  display:inline-flex;
+  align-items:center;
+  gap:1.25rem;
+  padding:.85rem 1.15rem;
+  border-radius:8px;
+  background:var(--text);
+  color:var(--bg);
+  font-size:.85rem;
+  font-weight:600;
+}
 
 .about-focus {
   display:flex;
